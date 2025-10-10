@@ -1,0 +1,93 @@
+﻿@model IEnumerable<Reserva_de_equipos.Models.Reserva>
+
+@{
+    ViewData["Title"] = "Mis Reservas";
+}
+
+<!-- DataTables CSS y JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<h2 class="fw-lighter mb-lg-3 pb-1 h2">
+    Reservas de
+    <strong class="fw-semibold">@User.FindFirst("NombreApellido")?.Value</strong>
+</h2>
+
+<div class="table-responsive">
+    <table id="misReservas" class="table table-hover w-100">
+    <thead>
+        <tr>
+            <th class="dtr-control" style="width:1%"></th>
+            <th>Estado</th>
+            <th style="width: 150px">Equipo</th>
+            <th>Detalle</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Indefinido</th>
+            <th>@Html.DisplayNameFor(model => model.Ubicación)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            // Color condicional del campo Estado.
+            var bgColor = item.Estado switch
+            {
+                "Pendiente" => "bg-pendiente",
+                "Aprobado" => "bg-aprobado",
+                _ => "bg-secondary text-white"
+            };
+
+            <tr>
+                <td class="dtr-control"></td>
+                <td class=" align-content-center">
+                    <div class="rounded-3 p-2 px-3 text-center fw-semibold @bgColor">
+                        @Html.DisplayFor(modelItem => item.Estado)
+                    </div>
+                </td>
+                <td class="text-justify" style="width: 150px">@Html.DisplayFor(modelItem => item.Equipo.Nombre)</td>
+                <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
+                <td>@Html.DisplayFor(modelItem => item.FechaInicio)</td>
+                <td>@Html.DisplayFor(modelItem => item.FechaFin)</td>
+                <td>@Html.DisplayFor(modelItem => item.Indefinido)</td>
+                <td>@Html.DisplayFor(modelItem => item.Ubicación)</td>
+                <td style="width: 150px" class=" align-content-center">
+                    <div class="justify-content-start">
+                        <a class="rounded-3 p-2 px-3 text-center bg-warning" asp-action="Edit" asp-route-id="@item.ReservaId" data-edit>
+                            <iconify-icon icon="ri:edit-fill"></iconify-icon>
+                            <span>Editar</span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
+
+<div id="modalHost"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      new DataTable('#misReservas', {
+        responsive: true,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
+        },
+      });
+    });
+
+    document.addEventListener('click', async (e) => {
+    const a = e.target.closest('a[data-edit]');
+    if (!a) return;
+    e.preventDefault();
+    const html = await fetch(a.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }).then(r => r.text());
+    const host = document.getElementById('modalHost');
+    host.innerHTML = html;
+    const modalEl = document.getElementById('crearReservaModal') || document.getElementById('reservaModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+    });
+
+
+</script>

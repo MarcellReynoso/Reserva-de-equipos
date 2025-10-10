@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "ReQ GoSoft | Calendario";
+}
+
+<h2 class="fw-lighter mb-lg-3 pb-1 h2">
+    Calendario de
+    <strong class="fw-semibold">Reserva de equipos</strong>
+</h2>
+
+<div class="card my-2">
+    <div class="card-body">
+        <div class="row justify-content-between pb-4">
+            <div class="col-auto">
+                <button class="btn btn-primary my-2 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#crearReservaModal">
+                    <iconify-icon icon="zondicons:add-solid"></iconify-icon>
+                    <span>Crear nueva reserva</span>
+                </button>
+            </div>
+        </div>
+        <div id='calendar'></div>
+    </div>
+</div>
+
+<partial name="_CreateReserva" />
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'es-PE',
+                firstDay: 1,
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'title',
+                    right: 'prev,next today',
+                    center: 'timeGridDay,timeGridWeek,dayGridMonth,multiMonthYear,listMonth'
+                },
+                buttonText: {
+                    year: 'Año',
+                    today: 'Hoy',
+                    month: 'Mes',
+                    week: 'Semana',
+                    day: 'Día',
+                    list: 'Lista'
+                },
+                events: @Html.Raw(ViewBag.Reservas),
+                eventContent: function(info){
+                    var title = document.createElement('div');
+                    title.innerText = info.event.title || '';
+                    var container = document.createElement('div');
+                    container.classList.add('fc-event-container');
+                    container.appendChild(title);
+                    return { domNodes: [container] };
+                },
+                eventDidMount: function(info) {
+                    const estado = info.event.extendedProps.estado;
+                    if (estado === "Pendiente") {
+                        info.el.style.backgroundColor = "#fff5cc"; // amarillo
+                        info.el.style.borderColor = "#fff5cc";
+                        info.el.style.color = "#8e7a27";
+                    }
+                    else if (estado === "Aprobado") {
+                        info.el.style.backgroundColor = "#cbe4ff"; // verde
+                        info.el.style.borderColor = "#cbe4ff";
+                        info.el.style.color = "#1724e3";
+                    }
+                    else if (estado === "Rechazado") {
+                        info.el.style.backgroundColor = "#dc3545"; // rojo
+                        info.el.style.borderColor = "#dc3545";
+                        info.el.style.TextColor = "#fff";
+                    }
+                },
+            });
+            calendar.render();
+        });
+    </script>
+
+}

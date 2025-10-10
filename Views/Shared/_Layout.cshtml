@@ -1,0 +1,281 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] </title>
+    <link rel="shortcut icon" type="image/png" src="~/favicon.ico"  />
+    <link rel="stylesheet" href="../assets/css/styles.min.css" />
+    <link href="https://cdn.datatables.net/v/dt/dt-2.3.4/r-3.0.7/datatables.min.css" rel="stylesheet" integrity="sha384-Z5ttuNJ6ZR9dM6rniOsfLKN4Op4xj2U1v0/w92/pqpds3/Nem3vXAWrt8cmEKp5N" crossorigin="anonymous">
+</head>
+
+<body>
+    <!--  Body Wrapper -->
+    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+         data-sidebar-position="fixed" data-header-position="fixed">
+
+        <!-- Sidebar Start -->
+        <aside class="left-sidebar">
+            <!-- Sidebar scroll-->
+            <div>
+                <div class="brand-logo d-flex align-items-center justify-content-between">
+                    <img class="mx-auto py-3" width="200" src="../assets/images/logos/logo-gig.png" alt="" />
+                    <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+                        <i class="ti ti-x fs-8"></i>
+                    </div>
+                </div>
+                <!-- Sidebar navigation-->
+                <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+                    <ul id="sidebarnav">
+                        <li class="sidebar-item">
+                            <a asp-area="" asp-controller="Home" asp-action="Index" class="sidebar-link" aria-expanded="false">
+                                <iconify-icon icon="mdi:about"></iconify-icon>
+                                <span class="hide-menu">Inicio</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a asp-area="" asp-controller="Calendario" asp-action="Index" class="sidebar-link" aria-expanded="false">
+                                <iconify-icon icon="fa-solid:calendar-alt"></iconify-icon>
+                                <span class="hide-menu">Calendario</span>
+                            </a>
+                        </li>
+                        <!-- ---------------------------------- -->
+                        <!-- Dashboard -->
+                        <!-- ---------------------------------- -->
+                        <li class="sidebar-item">
+                            <a asp-area="" asp-controller="Reservas" asp-action="Index" class="sidebar-link" aria-expanded="false">
+                                <iconify-icon icon="fa6-solid:calendar-day"></iconify-icon>
+                                <span class="hide-menu">Mis Reservas</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link justify-content-start has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="d-flex">
+                                        <iconify-icon icon="vscode-icons:file-type-light-config"></iconify-icon>
+                                    </span>
+                                    <span class="hide-menu">Configuración</span>
+                                </div>
+
+                            </a>
+                            <ul aria-expanded="false" class="collapse first-level">
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link justify-content-between" target="_blank"
+                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="d-flex">
+                                                <span class="icon-small"></span>
+                                            </span>
+                                            <span class="hide-menu">Área</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link justify-content-between" target="_blank"
+                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="d-flex">
+                                                <span class="icon-small"></span>
+                                            </span>
+                                            <span class="hide-menu">Área disponible</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link justify-content-between" target="_blank"
+                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="d-flex">
+                                                <span class="icon-small"></span>
+                                            </span>
+                                            <span class="hide-menu">Detalle de reserva</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link justify-content-between" target="_blank"
+                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="d-flex">
+                                                <span class="icon-small"></span>
+                                            </span>
+                                            <span class="hide-menu">Empresa</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link justify-content-between" target="_blank"
+                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="d-flex">
+                                                <span class="icon-small"></span>
+                                            </span>
+                                            <span class="hide-menu">Equipo</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link justify-content-between" target="_blank"
+                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="d-flex">
+                                                <span class="icon-small"></span>
+                                            </span>
+                                            <span class="hide-menu">Reserva</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link justify-content-between" target="_blank"
+                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="d-flex">
+                                                <span class="icon-small"></span>
+                                            </span>
+                                            <span class="hide-menu">Reponsable</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link justify-content-between" target="_blank"
+                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="d-flex">
+                                                <span class="icon-small"></span>
+                                            </span>
+                                            <span class="hide-menu">Rol</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link justify-content-between" target="_blank"
+                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="d-flex">
+                                                <span class="icon-small"></span>
+                                            </span>
+                                            <span class="hide-menu">Tipo de equipo</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link justify-content-between" target="_blank"
+                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="d-flex">
+                                                <span class="icon-small"></span>
+                                            </span>
+                                            <span class="hide-menu">Usuario</span>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link justify-content-between" target="_blank"
+                               href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/index.html" aria-expanded="false">
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="d-flex">
+                                        <iconify-icon icon="iconoir:reports-solid" class=""></iconify-icon>
+                                    </span>
+                                    <span class="hide-menu">Reportabilidad</span>
+                                </div>
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+                <!-- End Sidebar navigation -->
+            </div>
+            <!-- End Sidebar scroll-->
+        </aside>
+        <!--  Sidebar End -->
+        <!--  Main wrapper -->
+        <div class="body-wrapper">
+            <!--  Header Start -->
+            <header class="app-header">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <ul class="navbar-nav">
+                        <li class="nav-item d-block d-xl-none">
+                            <a class="nav-link sidebartoggler " id="headerCollapse" href="javascript:void(0)">
+                                <i class="ti ti-menu-2"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+                        <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link " href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    <img src="../assets/images/profile/user.jpg" alt="" width="35" height="35" class="rounded-circle">
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                                    <div class="message-body">
+                                        <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                            <i class="ti ti-user fs-6"></i>
+                                            <p class="mb-0 fs-3">Editar perfil</p>
+                                        </a>
+                                        <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item"
+                                           data-bs-toggle="modal" data-bs-target="#cambiarContrasenaModal">
+                                            <i class="ti ti-mail fs-6"></i>
+                                            <p class="mb-0 fs-3">Cambiar contraseña</p>
+                                        </a>
+                                        <a asp-controller="Autenticacion" asp-action="Logout" class="btn btn-outline-danger mx-3 mt-2 d-block">Cerrar sesión</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </header>
+            <!--  Header End -->
+            <div class="body-wrapper-inner">
+                <div class="container-fluid">
+
+                    @if (TempData["Mensaje"] != null)
+                    {
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                const modals = document.querySelectorAll('.modal.show');
+                                if (modals.length > 0) {
+                                    $(modals).on('hidden.bs.modal', function () {
+                                        alert("@TempData["Mensaje"]");
+                                    });
+                                    $(modals).modal('hide');
+                                } else {
+                                    alert("@TempData["Mensaje"]");
+                                }
+                            });
+                        </script>
+                    }
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="border-top footer text-muted">
+        <div class="container pt-2">
+            &copy; 2025 - Gointegreat
+        </div>
+    </footer>
+
+    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/sidebarmenu.js"></script>
+    <script src="../assets/js/app.min.js"></script>
+    <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+    <!-- Fullcalendar -->
+    <script src="~/assets/js/index.global.min.js"></script>
+    <!-- Change Password -->
+    @await Html.PartialAsync("_ChangePassword", new Reserva_de_equipos.Models.ViewModels.ContraseñaViewModel())
+    <!-- DataTable JS -->
+    <script src="https://cdn.datatables.net/v/dt/dt-2.3.4/r-3.0.7/datatables.min.js" integrity="sha384-6RxfddUuMaoet78bYlcqv+T8nOOqcHs9LscIstj5/ojk/ars75NBFqT5TSbAOL2l" crossorigin="anonymous"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

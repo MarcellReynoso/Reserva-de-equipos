@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "ReQ GoSoft";
+}
+<h2 class="fw-lighter mb-lg-3 pb-3 h2">
+    Bienvenido,
+    <strong class="fw-semibold">@User.FindFirst("NombreApellido")?.Value</strong>
+</h2>
+<div class="card mb-3 mb-lg-3">
+    <div class="card-body">
+        <p id="saludoInicial" class="text-justify">
+            ReQ GoSoft es una solución amigable para la reserva de equipos de minería.
+            Habilita al usuario un espacio de trabajo permitiéndole una visualización completa de equipos de apoyo disponibles.
+            Visualice en el calendario la disponibilidad de los equipos y realice sus reservas de manera sencilla y eficiente.
+        </p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="card overflow-hidden hover-img h-100">
+            <div class="position-relative">
+                <a href="javascript:void(0)">
+                    <img src="~/assets/images/products/camion-carrusel.png" class="card-img-top" alt="" height="200">
+                </a>
+            </div>
+            <div class="card-body">
+                <p class="text-justify">
+                    Permite consultar los días y horas de disponibilidad de equipos. Centraliza la información de equipos disponibles y no disponibles.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="card overflow-hidden hover-img h-100">
+            <div class="position-relative">
+                <a href="javascript:void(0)">
+                    <img src="~/assets/images/products/camion-carrusel1.jpg" class="card-img-top" alt="" height="200">
+                </a>
+            </div>
+            <div class="card-body">
+                <p class="text-justify">
+                    Mínima gestión por parte del administrador del sistema. Pago por volumen de suscriptores (orientado al usuario), Multiplataforma
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="card overflow-hidden hover-img h-100">
+            <div class="position-relative">
+                <a href="javascript:void(0)">
+                    <img src="~/assets/images/products/camion-carrusel2.jpg" class="card-img-top" alt="" height="200">
+                </a>
+            </div>
+            <div class="card-body">
+                <p class="text-justify">
+                    Reduce costos y aumenta la eficiencia operativa. Mantenimiento por parte del proveedor. Máxima seguridad.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="col-12 card-body">
+        <div class="alert alert-primary d-flex align-items-center py-2 px-3 mb-0" role="alert" style="border-left: 5px solid #2194e4" ;>
+            <iconify-icon icon="material-symbols:info-outline" class="me-2" style="font-size: 1.3rem;"></iconify-icon>
+            <span class="text-justify">
+                Para realizar su reserva, diríjase a la opción de
+                <iconify-icon icon="fa-solid:calendar-alt"></iconify-icon> <b>Calendario</b>
+                en la barra lateral izquierda.
+            </span>
+        </div>
+        <div class="alert alert-info d-flex align-items-center mt-4 py-2 px-3 mb-0" role="alert" style="border-left: 5px solid #2194e4" ;>
+            <iconify-icon icon="material-symbols:info-outline" class="me-2" style="font-size: 1.3rem;"></iconify-icon>
+            <span class="text-justify">
+                En la pestaña de 
+                <iconify-icon icon="fa6-solid:calendar-day"></iconify-icon><b> Mis Reservas</b>, 
+                podrá visualizar el estado y el detalle de las reservas realizadas por usted.
+                
+            </span>
+        </div>
+    </div>
+</div>
+
+
