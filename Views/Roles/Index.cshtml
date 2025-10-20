@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Reserva_de_equipos.Models.Rol>
+
+@{
+    ViewData["Title"] = "ReQ GoSoft | Roles";
+}
+
+<!-- DataTables CSS y JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<h2 class="fw-lighter mb-lg-3 pb-1 h2">
+    Administrar
+    <strong class="fw-semibold">Roles</strong>
+</h2>
+
+@* Los roles no deben modificarse, no tendría sentido en la lógica del sistema *@
+
+@* <div class="row justify-content-between pb-4">
+    <div class="col-auto">
+        <button class="btn btn-primary my-2 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#crearUsuarioModal">
+            <iconify-icon icon="zondicons:add-solid"></iconify-icon>
+            <span>Crear nuevo rol</span>
+        </button>
+    </div>
+</div> *@
+
+<div class="table-responsive">
+    <table id="Roles" class="table table-hover w-100">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Descripción)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.RolId)</td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Descripción)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+      new DataTable('#Roles', {
+        responsive: true,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
+        },
+      });
+    });
+</script>

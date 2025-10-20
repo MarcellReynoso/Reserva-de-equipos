@@ -1,0 +1,53 @@
+﻿@model Reserva_de_equipos.Models.Conductor
+
+<div class="modal fade" id="editConductorModal-@Model.ConductorId" tabindex="-1"
+     aria-labelledby="editConductorModalLabel-@Model.ConductorId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-2 py-3">
+                <h5 class="modal-title" id="editConductorModalLabel-@Model.ConductorId">Editar conductor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Edit" method="post" novalidate class="modal-form p-1">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ConductorId" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Nombre" class="form-label">Nombre</label>
+                        <input asp-for="Nombre" class="form-control" />
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SegundoNombre" class="form-label">Segundo nombre</label>
+                        <input asp-for="SegundoNombre" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ApellidoPaterno" class="form-label">Apellido paterno</label>
+                        <input asp-for="ApellidoPaterno" class="form-control" />
+                        <span asp-validation-for="ApellidoPaterno" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ApellidoMaterno" class="form-label">Apellido materno</label>
+                        <input asp-for="ApellidoMaterno" class="form-control" />
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input asp-for="Disponible" class="form-check-input" id="Activo-@Model.ConductorId" />
+                        <label for="Activo-@Model.ConductorId" class="form-check-label">Disponible</label>
+                        <span asp-validation-for="Disponible" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-2">
+                        <button type="submit" class="btn btn-primary px-4">Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

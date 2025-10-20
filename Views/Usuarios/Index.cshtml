@@ -1,0 +1,109 @@
+﻿@model IEnumerable<Reserva_de_equipos.Models.Usuario>
+
+@{
+    ViewData["Title"] = "ReQ GoSoft | Usuarios";
+}
+
+<!-- DataTables CSS y JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<h2 class="fw-lighter mb-lg-3 pb-1 h2">
+    Administrar
+    <strong class="fw-semibold">usuarios</strong>
+</h2>
+
+
+<div class="row justify-content-between pb-4">
+    <div class="col-auto">
+        <button class="btn btn-primary my-2 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#crearUsuarioModal">
+            <iconify-icon icon="zondicons:add-solid"></iconify-icon>
+            <span>Crear nuevo usuario</span>
+        </button>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table id="misReservas" class="table table-hover w-100">
+        <thead>
+            <tr>
+                <th class="dtr-control" style="width:1%"></th>
+                <th>Activo</th>
+                <th>Nombre</th>
+                <th>Segundo nombre</th>
+                <th>Apellido paterno</th>
+                <th>Apellido materno</th>
+@*                 <th>Correo</th> *@
+                <th>Username</th>
+                <th>Rol</th>
+                <th>Área</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="dtr-control"></td>
+                    <td>@Html.DisplayFor(modelItem => item.Activo)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
+                    <td>@Html.DisplayFor(modelItem => item.SegundoNombre)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ApellidoPaterno)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ApellidoMaterno)</td>
+                    @*<td>@Html.DisplayFor(modelItem => item.Correo)</td> *@
+                    <td>@Html.DisplayFor(modelItem => item.Username)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Rol.Nombre)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Area.Nombre)</td>
+                    <td style="width: 150px" class="align-content-center">
+                        <div class="justify-content-start">
+                            <button type="button"
+                                    class="rounded-3 p-2 btn btn-warning px-3 text-center"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editUsuarioModal-@item.UsuarioId">
+                                <iconify-icon icon="ri:edit-fill"></iconify-icon>
+                                <span>Editar</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@await Html.PartialAsync("_CreateUsuario", new Reserva_de_equipos.Models.ViewModels.CreateUsuarioViewModel())
+
+@foreach (var u in Model)
+{
+    var vm = new Reserva_de_equipos.Models.ViewModels.EditUsuarioViewModel
+    {
+        UsuarioId = u.UsuarioId,
+        Nombre = u.Nombre,
+        SegundoNombre = u.SegundoNombre,
+        ApellidoPaterno = u.ApellidoPaterno,
+        ApellidoMaterno = u.ApellidoMaterno,
+        Correo = u.Correo,
+        Username = u.Username,
+        Activo = u.Activo,
+        RolId = u.RolId,
+        AreaId = u.AreaId
+    };
+    @await Html.PartialAsync("_EditUsuario", vm)
+}
+
+<div id="modalHost"></div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          new DataTable('#misReservas', {
+            responsive: true,
+            language: {
+                url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
+            },
+          });
+        });
+    </script>
+}
+
+
+

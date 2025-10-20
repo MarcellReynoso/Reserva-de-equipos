@@ -8,6 +8,10 @@
     <link rel="shortcut icon" type="image/png" src="~/favicon.ico"  />
     <link rel="stylesheet" href="../assets/css/styles.min.css" />
     <link href="https://cdn.datatables.net/v/dt/dt-2.3.4/r-3.0.7/datatables.min.css" rel="stylesheet" integrity="sha384-Z5ttuNJ6ZR9dM6rniOsfLKN4Op4xj2U1v0/w92/pqpds3/Nem3vXAWrt8cmEKp5N" crossorigin="anonymous">
+    @* Leaflet (CDN) *@
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="" />
 </head>
 
 <body>
@@ -51,6 +55,62 @@
                         </li>
 
                         <li class="sidebar-item">
+                            <a asp-area="" asp-controller="Reservas" asp-action="Pendientes" class="sidebar-link" aria-expanded="false">
+                                <iconify-icon icon="tdesign:calendar-2-filled"></iconify-icon>
+                                <span class="hide-menu">Reservas pendientes</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a asp-area="" asp-controller="Reservas" asp-action="EnProceso" class="sidebar-link" aria-expanded="false">
+                                <iconify-icon icon="fluent:calendar-clock-32-filled"></iconify-icon>
+                                <span class="hide-menu">Reservas en Proceso</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a asp-area="" asp-controller="Reportes" asp-action="Index" class="sidebar-link" aria-expanded="false">
+                                <iconify-icon icon="ion:bar-chart"></iconify-icon>
+                                <span class="hide-menu">Reportabilidad</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <span class="sidebar-divider lg"></span>
+                        </li>
+                        <li class="nav-small-cap">
+                            <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                            <span class="hide-menu">Administración</span>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link justify-content-between"
+                               asp-controller="Conductores" asp-action="Index">
+                                <div class="d-flex align-items-center gap-3">
+                                    <iconify-icon icon="mdi:drivers-license"></iconify-icon>
+                                    <span class="hide-menu">Conductor</span>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a class="sidebar-link justify-content-between"
+                               asp-controller="Equipos" asp-action="Index">
+                                <div class="d-flex align-items-center gap-3">
+                                    <iconify-icon icon="mdi:truck"></iconify-icon>
+                                    <span class="hide-menu">Equipo</span>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a asp-area="" asp-controller="Usuarios" asp-action="Index" class="sidebar-link" aria-expanded="false">
+                                <iconify-icon icon="mdi:users"></iconify-icon>
+                                <span class="hide-menu">Usuarios</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
                             <a class="sidebar-link justify-content-start has-arrow" href="javascript:void(0)" aria-expanded="false">
                                 <div class="d-flex align-items-center gap-3">
                                     <span class="d-flex">
@@ -62,128 +122,68 @@
                             </a>
                             <ul aria-expanded="false" class="collapse first-level">
                                 <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" target="_blank"
-                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                    <a asp-controller="Areas" asp-action="Index" class="sidebar-link justify-content-between">
                                         <div class="d-flex align-items-center gap-3">
-                                            <span class="d-flex">
-                                                <span class="icon-small"></span>
-                                            </span>
+                                            <iconify-icon icon="ic:outline-place"></iconify-icon>
                                             <span class="hide-menu">Área</span>
                                         </div>
                                     </a>
                                 </li>
                                 <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" target="_blank"
-                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                    <a class="sidebar-link justify-content-between"
+                                    asp-controller="AreaDisponibles" asp-action="Index"
+                                       >
                                         <div class="d-flex align-items-center gap-3">
-                                            <span class="d-flex">
-                                                <span class="icon-small"></span>
-                                            </span>
+                                            <iconify-icon icon="ic:round-place"></iconify-icon>
                                             <span class="hide-menu">Área disponible</span>
                                         </div>
                                     </a>
                                 </li>
                                 <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" target="_blank"
-                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                    <a class="sidebar-link justify-content-between"
+                                       asp-controller="Empresas" asp-action="Index">
                                         <div class="d-flex align-items-center gap-3">
-                                            <span class="d-flex">
-                                                <span class="icon-small"></span>
-                                            </span>
-                                            <span class="hide-menu">Detalle de reserva</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" target="_blank"
-                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <span class="d-flex">
-                                                <span class="icon-small"></span>
-                                            </span>
+                                            <iconify-icon icon="ic:baseline-business"></iconify-icon>
                                             <span class="hide-menu">Empresa</span>
                                         </div>
                                     </a>
                                 </li>
-                                <li class="sidebar-item">
+
+                               @*<li class="sidebar-item">
                                     <a class="sidebar-link justify-content-between" target="_blank"
                                        href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
                                         <div class="d-flex align-items-center gap-3">
-                                            <span class="d-flex">
-                                                <span class="icon-small"></span>
-                                            </span>
-                                            <span class="hide-menu">Equipo</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" target="_blank"
-                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <span class="d-flex">
-                                                <span class="icon-small"></span>
-                                            </span>
+                                            <iconify-icon icon="famicons:calendar-sharp"></iconify-icon>
                                             <span class="hide-menu">Reserva</span>
                                         </div>
                                     </a>
-                                </li>
+                                </li> *@
                                 <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" target="_blank"
-                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                    <a class="sidebar-link justify-content-between" 
+                                    asp-controller="Responsables" asp-action="Index">
                                         <div class="d-flex align-items-center gap-3">
-                                            <span class="d-flex">
-                                                <span class="icon-small"></span>
-                                            </span>
+                                            <iconify-icon icon="ix:work-case-filled"></iconify-icon>
                                             <span class="hide-menu">Reponsable</span>
                                         </div>
                                     </a>
                                 </li>
                                 <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" target="_blank"
-                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                    <a class="sidebar-link justify-content-between" asp-controller="Roles" asp-action="Index">
                                         <div class="d-flex align-items-center gap-3">
-                                            <span class="d-flex">
-                                                <span class="icon-small"></span>
-                                            </span>
+                                            <iconify-icon icon="eos-icons:role-binding"></iconify-icon>
                                             <span class="hide-menu">Rol</span>
                                         </div>
                                     </a>
                                 </li>
                                 <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" target="_blank"
-                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
+                                    <a class="sidebar-link justify-content-between" asp-controller="TipoEquipos" asp-action="Index">
                                         <div class="d-flex align-items-center gap-3">
-                                            <span class="d-flex">
-                                                <span class="icon-small"></span>
-                                            </span>
+                                            <iconify-icon icon="fa7-solid:truck"></iconify-icon>
                                             <span class="hide-menu">Tipo de equipo</span>
                                         </div>
                                     </a>
                                 </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" target="_blank"
-                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <span class="d-flex">
-                                                <span class="icon-small"></span>
-                                            </span>
-                                            <span class="hide-menu">Usuario</span>
-                                        </div>
-                                    </a>
-                                </li>
                             </ul>
-                        </li>
-
-                        <li class="sidebar-item">
-                            <a class="sidebar-link justify-content-between" target="_blank"
-                               href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/index.html" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="d-flex">
-                                        <iconify-icon icon="iconoir:reports-solid" class=""></iconify-icon>
-                                    </span>
-                                    <span class="hide-menu">Reportabilidad</span>
-                                </div>
-                            </a>
                         </li>
 
                     </ul>
@@ -207,6 +207,7 @@
                     </ul>
                     <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                            Hola, @User.FindFirst("NombreApellido")?.Value
                             <li class="nav-item dropdown">
                                 <a class="nav-link " href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
                                    aria-expanded="false">
@@ -214,13 +215,9 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                                     <div class="message-body">
-                                        <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                                            <i class="ti ti-user fs-6"></i>
-                                            <p class="mb-0 fs-3">Editar perfil</p>
-                                        </a>
                                         <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item"
                                            data-bs-toggle="modal" data-bs-target="#cambiarContrasenaModal">
-                                            <i class="ti ti-mail fs-6"></i>
+                                            <iconify-icon icon="mdi:password"></iconify-icon>
                                             <p class="mb-0 fs-3">Cambiar contraseña</p>
                                         </a>
                                         <a asp-controller="Autenticacion" asp-action="Logout" class="btn btn-outline-danger mx-3 mt-2 d-block">Cerrar sesión</a>
@@ -251,6 +248,7 @@
                             });
                         </script>
                     }
+                    <div id="modalHost"></div>
                     @RenderBody()
                 </div>
             </div>
@@ -274,6 +272,11 @@
     @await Html.PartialAsync("_ChangePassword", new Reserva_de_equipos.Models.ViewModels.ContraseñaViewModel())
     <!-- DataTable JS -->
     <script src="https://cdn.datatables.net/v/dt/dt-2.3.4/r-3.0.7/datatables.min.js" integrity="sha384-6RxfddUuMaoet78bYlcqv+T8nOOqcHs9LscIstj5/ojk/ars75NBFqT5TSbAOL2l" crossorigin="anonymous"></script>
+
+    @* Leaflet JS *@
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

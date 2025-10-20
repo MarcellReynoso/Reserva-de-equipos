@@ -1,0 +1,39 @@
+﻿@model Reserva_de_equipos.Models.Empresa
+
+<div class="modal fade" id="editEmpresaModal-@Model.EmpresaId" tabindex="-1"
+     aria-labelledby="editEmpresaModalLabel-@Model.EmpresaId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-2 py-3">
+                <h5 class="modal-title" id="editEmpresaModalLabel-@Model.EmpresaId">Editar empresa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Edit" method="post" novalidate class="modal-form p-1">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" asp-for="EmpresaId" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Nombre" class="form-label">Nombre</label>
+                        <input asp-for="Nombre" class="form-control" />
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Descripción" class="form-label">Descripción</label>
+                        <textarea asp-for="Descripción" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Descripción" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-2">
+                        <button type="submit" class="btn btn-primary px-4">Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

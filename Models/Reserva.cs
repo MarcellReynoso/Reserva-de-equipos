@@ -17,13 +17,22 @@ public partial class Reserva
     public DateTime? FechaFin { get; set; }
     public bool Indefinido { get; set; }
 
-    [Display(Name = "Descripción")]
-    [Required(ErrorMessage = "Es obligatorio colocar una descripción")]
     public string Descripcion { get; set; }
     public string Estado { get; set; } = "Pendiente";
+
     public DateTime Fecha { get; set; } = DateTime.Now;
+
     public string? Ubicación { get; set; }
+    public double? Latitud { get; set; }
+    public double? Longitud { get; set; }
+
+    public int? UsuarioId { get; set; }
+
+    public int? ConductorId { get; set; }
+
+    public virtual Conductor Conductor { get; set; }
 
     public virtual Equipo? Equipo { get; set; }
-    public virtual ICollection<DetalleReserva> DetalleReservas { get; set; } = new List<DetalleReserva>();
+
+    public virtual Usuario usuario { get; set; }
 }

@@ -1,0 +1,86 @@
+﻿@model IEnumerable<Reserva_de_equipos.Models.Area>
+
+
+@{
+    ViewData["Title"] = "ReQ GoSoft | Áreas";
+}
+
+<!-- DataTables CSS y JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<h2 class="fw-lighter mb-lg-3 pb-1 h2">
+    Administrar
+    <strong class="fw-semibold">Áreas</strong>
+</h2>
+
+<div class="row justify-content-between pb-4">
+    <div class="col-auto">
+        <button class="btn btn-primary my-2 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#crearAreaModal">
+            <iconify-icon icon="zondicons:add-solid"></iconify-icon>
+            <span>Crear nueva área</span>
+        </button>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table id="Areas" class="table table-hover w-100">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Empresa</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Nombre</td>
+                    <td>@item.Descripción</td>
+                    <td>@item.Empresa?.Nombre</td>
+                    <td class="align-content-center" style="width:150px;">
+                        <div class="d-flex justify-content-center gap-2">
+                            <button type="button"
+                                    class="btn btn-warning text-center"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editAreaModal-@item.AreaId">
+                                <iconify-icon icon="ri:edit-fill"></iconify-icon>
+                                <span>Editar</span>
+                            </button>
+
+                            <form asp-controller="Areas" asp-action="Delete" asp-route-id="@item.AreaId"
+                                  onclick="return confirm('¿Realmente desea borrar?');" method="post">
+                                <button class="btn btn-danger">
+                                    <iconify-icon icon="material-symbols:delete"></iconify-icon>
+                                    <span>Borrar</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
+@await Html.PartialAsync("_CreateArea", new Reserva_de_equipos.Models.Area())
+
+@foreach (var item in Model)
+{
+    @await Html.PartialAsync("_EditArea", item)
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new DataTable('#Areas', {
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
+                },
+            });
+        });
+    </script>
+}

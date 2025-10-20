@@ -5,7 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Reserva_de_equipos.Models;
 using Reserva_de_equipos.Models.ViewModels;
+using Reserva_de_equipos.Utils;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Reserva_de_equipos.Controllers
 {
@@ -30,43 +33,58 @@ namespace Reserva_de_equipos.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View("Index");
+
+            var passwordHashed = Encrypt.GetSHA256(loginViewModel.Password);
+            var user = await _context.Usuarios
+                .Include(u => u.Rol)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Username == loginViewModel.Username);
+
+            // Usuario no existe
+            if (user == null)
             {
-                var user = await _context.Usuarios
-                    .Where(u => u.Username == loginViewModel.Username && u.Password == loginViewModel.Password)
-                    .FirstOrDefaultAsync();
-             
-                if (user == null)
-                {
-                    ViewData["Mensaje"] = "Usuario o contraseña inválida.";
-                    return View("Index");
-                }
-
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.UsuarioId.ToString()),
-                    new Claim(ClaimTypes.Name, user.Nombre),
-                    new Claim("NombreApellido", user.Nombre + " " + user.ApellidoPaterno),
-                    new Claim(ClaimTypes.Role, _context.Rols.Find(user.RolId).Nombre),
-                };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authProperties = new AuthenticationProperties
-                {
-                    AllowRefresh = true,
-                };
-
-                await HttpContext.SignInAsync
-                (
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity),
-                    authProperties
-                );
-
-                return RedirectToAction("Index", "Home");
+                ViewData["Mensaje"] = "Usuario o contraseña inválida.";
+                return View("Index");
             }
-            return View("Index");
+
+            // Usuario inactivo
+            if (!user.Activo)
+            {
+                ViewData["Mensaje"] = "Usuario inactivo.";
+                return View("Index");
+            }
+
+            // Contraseña incorrecta
+            if (!string.Equals(user.Password, passwordHashed, StringComparison.Ordinal))
+            {
+                ViewData["Mensaje"] = "Usuario o contraseña inválida.";
+                return View("Index");
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UsuarioId.ToString()),
+                new Claim(ClaimTypes.Name, user.Nombre ?? user.Username),
+                new Claim("NombreApellido", $"{user.Nombre} {user.ApellidoPaterno}".Trim()),
+                new Claim(ClaimTypes.Role, user.Rol?.Nombre ?? "Cliente"),
+                new Claim("NombreCompleto", $"{user.Nombre} {user.SegundoNombre} {user.ApellidoPaterno} {user.ApellidoMaterno}".Replace("  "," ").Trim()),
+                new Claim("IsActive", "true"),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new AuthenticationProperties { AllowRefresh = true };
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties
+            );
+
+            return RedirectToAction("Index", "Home");
         }
+
 
         public async Task<IActionResult> Logout()
         {
@@ -95,8 +113,7 @@ namespace Reserva_de_equipos.Controllers
             if (!int.TryParse(idClaim, out var usuarioId)) return Unauthorized();
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.UsuarioId == usuarioId);
             if (usuario == null) return NotFound();
-
-            usuario.Password = Password;
+            usuario.Password = Encrypt.GetSHA256(Password);
             await _context.SaveChangesAsync();
             TempData["Mensaje"] = "Contrasena actualizada correctamente.";
             return RedirectToAction("Index", "Home");

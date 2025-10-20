@@ -1,0 +1,84 @@
+﻿@model IEnumerable<Reserva_de_equipos.Models.TipoEquipo>
+
+@{
+    ViewData["Title"] = "ReQ GoSoft | Tipos de equipo";
+}
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<h2 class="fw-lighter mb-lg-3 pb-1 h2">
+    Administrar
+    <strong class="fw-semibold">Tipos de equipo</strong>
+</h2>
+
+<div class="row justify-content-between pb-4">
+    <div class="col-auto">
+        <button class="btn btn-primary my-2 d-flex align-items-center gap-2"
+                data-bs-toggle="modal" data-bs-target="#crearTipoEquipoModal">
+            <iconify-icon icon="zondicons:add-solid"></iconify-icon>
+            <span>Crear nuevo tipo</span>
+        </button>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table id="TiposEquipo" class="table table-hover w-100">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th style="width:160px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Nombre</td>
+                    <td>@item.Descripcion</td>
+                    <td class="text-nowrap">
+                        <div class="d-flex align-items-center justify-content-evenly gap-2">
+                            <button type="button"
+                                    class="btn btn-warning"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editTipoEquipoModal-@item.TipoEquipoId">
+                                <iconify-icon icon="ri:edit-fill"></iconify-icon>
+                                <span>Editar</span>
+                            </button>
+                            <form asp-controller="TipoEquipos" asp-action="Delete" asp-route-id="@item.TipoEquipoId"
+                                  method="post" onclick="return confirm('¿Realmente desea borrar?');">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-danger">
+                                    <iconify-icon icon="material-symbols:delete"></iconify-icon>
+                                    <span>Borrar</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@await Html.PartialAsync("_CreateTipoEquipo", new Reserva_de_equipos.Models.TipoEquipo())
+
+@foreach (var item in Model)
+{
+    @await Html.PartialAsync("_EditTipoEquipo", item)
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new DataTable('#TiposEquipo', {
+                pageLength: 5,
+                lengthMenu: [5, 10, 15, 20, 50],
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
+                },
+            });
+        });
+    </script>
+}

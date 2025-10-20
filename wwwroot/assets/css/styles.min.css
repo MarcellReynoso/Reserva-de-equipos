@@ -16932,8 +16932,63 @@ ul {
 }
 
 .bg-aprobado {
-    background-color: #cbe4ff;
-    color: #1724e3;
+    background-color: #B9EBB7;
+    color: #024F00;
 }
 
-/*# sourceMappingURL=styles.min.css.map */
+.bg-rechazado {
+    background-color: #ffd7d5;
+    color: #f14143;
+}
+
+.bg-enProceso {
+    background-color: #cbe4ff;
+    color: #1929A8;
+}
+
+#UbicacionWrapper {
+    position: relative;
+    overflow: visible;
+}
+
+/* La lista SIEMPRE por encima del mapa y controles */
+#AutocompleteList {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 5000; /* > modal (~1050) y > leaflet panes */
+    max-height: 260px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: .5rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,.1);
+}
+
+/* Empuja el mapa abajo en la pila por si acaso */
+#mapWrapper {
+    position: relative;
+    z-index: 1;
+}
+
+.leaflet-container,
+.leaflet-pane,
+.leaflet-top, .leaflet-bottom {
+    z-index: 0 !important;
+}
+
+/* Estilo de los ítems del autocompletado */
+#AutocompleteList > .list-group-item {
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+    /* Color de fondo al pasar el mouse */
+    #AutocompleteList > .list-group-item:hover {
+        background-color: #f1f5ff;
+    }
+
+    #AutocompleteList > .list-group-item:active {
+        background-color: #e0ebff;
+    }

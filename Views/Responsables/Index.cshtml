@@ -1,0 +1,89 @@
+﻿@model IEnumerable<Reserva_de_equipos.Models.Responsable>
+
+@{
+    ViewData["Title"] = "ReQ GoSoft | Responsables";
+}
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<h2 class="fw-lighter mb-lg-3 pb-1 h2">
+    Administrar
+    <strong class="fw-semibold">Responsables</strong>
+</h2>
+
+<div class="row justify-content-between pb-4">
+    <div class="col-auto">
+        <button class="btn btn-primary my-2 d-flex align-items-center gap-2"
+                data-bs-toggle="modal" data-bs-target="#crearResponsableModal">
+            <iconify-icon icon="zondicons:add-solid"></iconify-icon>
+            <span>Crear nuevo responsable</span>
+        </button>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table id="Responsables" class="table table-hover w-100">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Segundo nombre</th>
+                <th>Apellido paterno</th>
+                <th>Apellido materno</th>
+                <th style="width:160px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Nombre</td>
+                    <td>@item.SegundoNombre</td>
+                    <td>@item.ApellidoPaterno</td>
+                    <td>@item.ApellidoMaterno</td>
+                    <td class="text-nowrap">
+                        <div class="d-flex justify-content-evenly">
+                            <button type="button"
+                                    class="btn btn-warning"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editResponsableModal-@item.ResponsableId">
+                                <iconify-icon icon="ri:edit-fill"></iconify-icon>
+                                <span>Editar</span>
+                            </button>
+
+                            <form asp-controller="Responsables" asp-action="Delete" asp-route-id="@item.ResponsableId"
+                                  method="post" onclick="return confirm('¿Realmente desea borrar?');">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-danger">
+                                    <iconify-icon icon="material-symbols:delete"></iconify-icon>
+                                    <span>Borrar</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@await Html.PartialAsync("_CreateResponsable", new Reserva_de_equipos.Models.Responsable())
+
+@foreach (var item in Model)
+{
+    @await Html.PartialAsync("_EditResponsable", item)
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new DataTable('#Responsables', {
+                pageLength: 5,
+                lengthMenu: [5, 10, 15, 20, 50],
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
+                },
+            });
+        });
+    </script>
+}

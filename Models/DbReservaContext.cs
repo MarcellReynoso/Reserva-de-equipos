@@ -19,7 +19,7 @@ public partial class DbReservaContext : DbContext
 
     public virtual DbSet<AreaDisponible> AreaDisponibles { get; set; }
 
-    public virtual DbSet<DetalleReserva> DetalleReservas { get; set; }
+    public virtual DbSet<Conductor> Conductores { get; set; }
 
     public virtual DbSet<Empresa> Empresas { get; set; }
 
@@ -75,30 +75,25 @@ public partial class DbReservaContext : DbContext
                 .HasConstraintName("FK_Area_Disponible_Equipo");
         });
 
-        modelBuilder.Entity<DetalleReserva>(entity =>
+        modelBuilder.Entity<Conductor>(entity =>
         {
-            entity.ToTable("Detalle_Reserva", "Reserva");
+            entity.ToTable("Conductor", "Reserva");
 
-            entity.Property(e => e.DetalleReservaId).HasColumnName("Detalle_ReservaId");
-            entity.Property(e => e.CantidadEquipos).HasColumnName("Cantidad_Equipos");
-            entity.Property(e => e.Descripcion)
-                .HasMaxLength(200)
-                .IsUnicode(false);
-            entity.Property(e => e.FechaFin)
-                .HasColumnType("datetime")
-                .HasColumnName("Fecha_Fin");
-            entity.Property(e => e.FechaInicio)
-                .HasColumnType("datetime")
-                .HasColumnName("Fecha_Inicio");
-            entity.Property(e => e.Ubicación)
+            entity.Property(c => c.Disponible).HasDefaultValue(true);
+            entity.Property(c => c.Nombre)
                 .IsRequired()
                 .HasMaxLength(200)
                 .IsUnicode(false);
-
-            entity.HasOne(d => d.Reserva).WithMany(p => p.DetalleReservas)
-                .HasForeignKey(d => d.ReservaId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Detalle_Reserva_Reserva");
+            entity.Property(c => c.SegundoNombre)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(c => c.ApellidoPaterno)
+                .IsRequired()
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(c => c.ApellidoMaterno)
+                .HasMaxLength(200)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Empresa>(entity =>
@@ -118,8 +113,8 @@ public partial class DbReservaContext : DbContext
         {
             entity.ToTable("Equipo", "Reserva");
 
+            entity.Property(e => e.Disponible).HasDefaultValue(true);
             entity.Property(e => e.Descripcion)
-                .IsRequired()
                 .HasMaxLength(200)
                 .IsUnicode(false);
             entity.Property(e => e.Nombre)

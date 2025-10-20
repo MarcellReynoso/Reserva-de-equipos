@@ -1,0 +1,90 @@
+﻿@model IEnumerable<Reserva_de_equipos.Models.Equipo>
+
+@{
+    ViewData["Title"] = "ReQ GoSoft | Equipos";
+}
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<h2 class="fw-lighter mb-lg-3 pb-1 h2">
+    Administrar
+    <strong class="fw-semibold">Equipos</strong>
+</h2>
+
+<div class="row justify-content-between pb-4">
+    <div class="col-auto">
+        <button class="btn btn-primary my-2 d-flex align-items-center gap-2"
+                data-bs-toggle="modal" data-bs-target="#crearEquipoModal">
+            <iconify-icon icon="zondicons:add-solid"></iconify-icon>
+            <span>Crear nuevo equipo</span>
+        </button>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table id="Equipos" class="table table-hover w-100">
+        <thead>
+            <tr>
+                <th>Disponible</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Responsable</th>
+                <th>Tipo de equipo</th>
+                <th style="width:160px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Disponible)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Responsable.Nombre)</td>
+                    <td>@Html.DisplayFor(modelItem => item.TipoEquipo.Nombre)</td>
+                    <td class="text-nowrap">
+                        <div class="d-flex justify-content-evenly gap-2">
+                            <button type="button"
+                                    class="btn btn-warning"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editEquipoModal-@item.EquipoId">
+                                <iconify-icon icon="ri:edit-fill"></iconify-icon>
+                                <span>Editar</span>
+                            </button>
+                            <form asp-controller="Equipos" asp-action="Delete" asp-route-id="@item.EquipoId"
+                                  method="post" onclick="return confirm('¿Realmente desea borrar?');">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-danger">
+                                    <iconify-icon icon="material-symbols:delete"></iconify-icon>
+                                    <span>Borrar</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@await Html.PartialAsync("_CreateEquipo", new Reserva_de_equipos.Models.Equipo())
+
+@foreach (var item in Model)
+{
+    @await Html.PartialAsync("_EditEquipo", item)
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new DataTable('#Equipos', {
+                pageLength: 5,
+                lengthMenu: [5, 10, 15, 20, 50],
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
+                },
+            });
+        });
+    </script>
+}

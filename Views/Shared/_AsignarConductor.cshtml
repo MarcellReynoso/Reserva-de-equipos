@@ -1,0 +1,35 @@
+﻿@model Reserva_de_equipos.Models.ViewModels.AsignarConductorViewModel
+@{
+    var conductores = (IEnumerable<SelectListItem>)ViewBag.Conductores;
+}
+
+<div class="modal fade" id="asignarConductorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-action="AsignarConductor" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ReservaId" />
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Asignar conductor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Conductor</label>
+                        <select asp-for="ConductorId" asp-items="conductores" class="form-select">
+                            <option value="">Seleccione…</option>
+                        </select>
+                        <span asp-validation-for="ConductorId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -12,39 +12,47 @@ namespace Reserva_de_equipos.Controllers
     public class CalendarioController : Controller
     {
         private readonly DbReservaContext _context;
+        private readonly IConfiguration _configuration;
 
-        public CalendarioController(DbReservaContext context)
+        public CalendarioController(DbReservaContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? tipoEquipoId)
         {
-            // Obtener los eventos para el calendario
-            List<Reserva> reservas = _context.Reservas.ToList();
-            List<object> items = new List<object>();
-            foreach (var reserva in reservas)
-            {
-                var item = new
+            var items = await _context.Reservas
+                .AsNoTracking()
+                .Include(r => r.usuario)
+                .Select(r => new
                 {
-                    id = reserva.ReservaId,
-                    start = reserva.FechaInicio,
-                    end = reserva.FechaFin,
-                    ubicacion = reserva.Ubicación,
-                    title = reserva.Descripcion,
-                    estado = reserva.Estado
-                };
-                items.Add(item);
-            }
-            ViewBag.Reservas = JsonConvert.SerializeObject(items);
-
-            // Obtener la lista de equipos para el formulario Create
-            ViewBag.Equipos = await _context.Equipos
-                .Select(e => new SelectListItem
-                {
-                    Value = e.EquipoId.ToString(),
-                    Text = e.Nombre
+                    id = r.ReservaId,
+                    start = r.FechaInicio,
+                    end = r.Indefinido ? (DateTime?)null : r.FechaFin,
+                    ubicacion = r.Ubicación,
+                    title = r.usuario.Nombre + " " + r.usuario.ApellidoPaterno,
+                    estado = r.Estado,
+                    descripcion = r.Descripcion
                 })
                 .ToListAsync();
+
+            ViewBag.Reservas = JsonConvert.SerializeObject(items);
+
+            ViewBag.MapboxToken = _configuration["Mapbox:Token"];
+
+            var tipos = await _context.TipoEquipos
+                .Where(t => _context.Equipos.Any(e => e.TipoEquipoId == t.TipoEquipoId && e.Disponible))
+                .Select(t => new SelectListItem { Value = t.TipoEquipoId.ToString(), Text = t.Nombre })
+                .OrderBy(t => t.Text)
+                .ToListAsync();
+            ViewBag.TiposEquipo = new SelectList(tipos, "Value", "Text");
+
+
+            var equipos = await _context.Equipos
+                .Where(e => e.Disponible)
+                .Select(e => new SelectListItem { Value = e.EquipoId.ToString(), Text = e.Nombre })
+                .ToListAsync();
+            ViewBag.Equipos = new SelectList(equipos, "Value", "Text");
 
             return View();
         }

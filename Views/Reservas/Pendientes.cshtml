@@ -1,0 +1,172 @@
+﻿@model IEnumerable<Reserva_de_equipos.Models.Reserva>
+
+@{
+    ViewData["Title"] = "Req GoSoft | Pendientes";
+}
+
+<!-- DataTables CSS y JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<h2 class="fw-lighter mb-lg-3 pb-1 h2">
+    Reservas 
+    <strong class="fw-semibold">pendientes</strong>
+</h2>
+
+<div class="table-responsive">
+    <table id="reservasPendientes" class="table table-hover w-100">
+        <thead>
+            <tr>
+                <th class="dtr-control" style="width:1%"></th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Equipo</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                // Color condicional del campo Estado.
+                var bgColor = item.Estado switch
+                {
+                    "Pendiente" => "bg-pendiente",
+                    "Aprobado" => "bg-aprobado",
+                    "Rechazado" => "bg-rechazado",
+                    "En proceso" => "bg-enProceso"
+                };
+
+                <tr>
+                    <td class="dtr-control"></td>
+                    <td>@Html.DisplayFor(modelItem => item.Fecha)</td>
+                    <td class=" align-content-center">
+                        <div class="rounded-3 p-2 px-3 text-center fw-semibold @bgColor">
+                            @Html.DisplayFor(modelItem => item.Estado)
+                        </div>
+                    </td>
+                    <td class="text-justify">@Html.DisplayFor(modelItem => item.Equipo.Nombre)</td>
+                    <td>@Html.DisplayFor(modelItem => item.FechaInicio)</td>
+                    <td>@Html.DisplayFor(modelItem => item.FechaFin)</td>
+                    <td>
+                        <div class="d-lg-flex justify-content-lg-evenly">
+                            <form asp-action="EnProceso"
+                                  method="post"
+                                  class="d-inline col-lg-auto col-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.ReservaId" />
+                                <button type="submit" class="btn btn-success"
+                                        onclick="return confirm('¿Realmente desea enviar la reserva a En Proceso?');">
+                                    <span>Enviar</span>
+                                </button>
+                            </form>
+
+                            <form asp-action="Rechazar" asp-route-id="@item.ReservaId" method="post" class="d-inline col-lg-auto col-2">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger"
+                                        onclick="return confirm('¿Realmente desea rechazar?');">
+                                    <span>Rechazar</span>
+                                </button>
+                            </form>
+                            <a asp-action="Details" asp-route-id="@item.ReservaId" data-edit
+                               class="btn btn-primary d-inline-flex col-lg-auto col-auto">
+                                <span>Ver detalles</span>
+                            </a>
+
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="modalHost"></div>
+
+@section Scripts{
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          new DataTable('#reservasPendientes', {
+            pageLength: 5,
+            lengthMenu: [5, 10, 15, 20, 50],
+            responsive: true,
+            language: {
+                url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
+            },
+          });
+        });
+
+        document.addEventListener('click', async (e) => {
+        const a = e.target.closest('a[data-edit]');
+        if (!a) return;
+        e.preventDefault();
+        const html = await fetch(a.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }).then(r => r.text());
+        const host = document.getElementById('modalHost');
+        host.innerHTML = html;
+        const modalEl = document.getElementById('crearReservaModal') || document.getElementById('reservaModal') || document.getElementById('readOnlyReservaModal');;
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+        });
+    </script>
+
+    <script>
+        (function () {
+          async function cargarEquipos(modal, tipoId, selectedId) {
+            const equipoSel = modal.querySelector('#EquipoId');
+            if (!equipoSel) return;
+
+            equipoSel.disabled = true;
+            equipoSel.innerHTML = '<option value="">Cargando...</option>';
+            try {
+              const url = '@Url.Action("EquiposTipo", "Reservas")' + `?tipoEquipoId=${encodeURIComponent(tipoId)}`;
+              const resp = await fetch(url);
+              if (!resp.ok) throw new Error('HTTP');
+
+              const data = await resp.json(); // [{equipoId,nombre}, ...]
+              const opts = ['<option value="">Seleccione un equipo</option>'];
+              for (const e of data) {
+                const sel = selectedId && String(selectedId) === String(e.equipoId) ? ' selected' : '';
+                opts.push(`<option value="${e.equipoId}"${sel}>${e.nombre}</option>`);
+              }
+              equipoSel.innerHTML = opts.join('');
+            } catch (err) {
+              console.error(err);
+              equipoSel.innerHTML = '<option value="">No se pudieron cargar los equipos</option>';
+            } finally {
+              equipoSel.disabled = false;
+            }
+          }
+
+          // Cuando se muestra el modal cargado por AJAX
+          document.addEventListener('shown.bs.modal', function (ev) {
+            const modal = ev.target;
+            if (modal.id !== 'crearReservaModal') return;
+
+            const tipoSel   = modal.querySelector('#TipoEquipoId');
+            const equipoSel = modal.querySelector('#EquipoId');
+            if (!tipoSel || !equipoSel) return;
+
+            // 1) Precarga en EDIT: tomar el EquipoId actual y recargar la lista según el tipo
+            const equipoActual = equipoSel.value;       // lo que vino del servidor en el partial
+            const tipoActual   = tipoSel.value;         // seleccionado en el partial
+            if (tipoActual) {
+              cargarEquipos(modal, tipoActual, equipoActual);
+            }
+
+            if (!tipoSel.dataset.bound) {             // evita duplicar handlers
+              tipoSel.addEventListener('change', () => {
+                const t = tipoSel.value;
+                if (!t) {
+                  equipoSel.innerHTML = '<option value="">Seleccione un equipo</option>';
+                  return;
+                }
+                // al cambiar el tipo, no mantener selección previa
+                cargarEquipos(modal, t, null);
+              });
+              tipoSel.dataset.bound = '1';
+            }
+          });
+        })();
+    </script>
+}

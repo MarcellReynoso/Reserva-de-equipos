@@ -1,0 +1,51 @@
+﻿@model Reserva_de_equipos.Models.Equipo
+
+<div class="modal fade" id="crearEquipoModal" tabindex="-1" aria-labelledby="crearEquipoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-2 py-3">
+                <h5 class="modal-title" id="crearEquipoModalLabel">Crear equipo</h5>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" method="post" novalidate class="modal-form p-1">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Nombre" class="form-label">Nombre (*)</label>
+                        <input asp-for="Nombre" class="form-control" autocomplete="off" autofocus />
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TipoEquipoId" class="form-label">Tipo de equipo (*)</label>
+                        <select asp-for="TipoEquipoId" class="form-select" asp-items="ViewBag.TiposEquipo">
+                            <option value="" selected disabled>Seleccione un tipo</option>
+                        </select>
+                        <span asp-validation-for="TipoEquipoId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ResponsableId" class="form-label">Responsable (*)</label>
+                        <select asp-for="ResponsableId" class="form-select" asp-items="ViewBag.Responsables">
+                            <option value="" selected disabled>Seleccione un responsable</option>
+                        </select>
+                        <span asp-validation-for="ResponsableId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Descripcion" class="form-label">Descripción</label>
+                        <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Descripcion" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-2">
+                        <button type="submit" class="btn btn-primary px-4">Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

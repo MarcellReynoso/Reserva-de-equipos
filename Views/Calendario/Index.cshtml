@@ -24,6 +24,8 @@
 <partial name="_CreateReserva" />
 
 @section Scripts {
+
+@* 1.- Script del calendario *@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const calendarEl = document.getElementById('calendar');
@@ -61,19 +63,341 @@
                         info.el.style.color = "#8e7a27";
                     }
                     else if (estado === "Aprobado") {
-                        info.el.style.backgroundColor = "#cbe4ff"; // verde
-                        info.el.style.borderColor = "#cbe4ff";
-                        info.el.style.color = "#1724e3";
+                        info.el.style.backgroundColor = "#B9EBB7"; // verde
+                        info.el.style.borderColor = "#B9EBB7";
+                        info.el.style.color = "#024F00";
                     }
                     else if (estado === "Rechazado") {
-                        info.el.style.backgroundColor = "#dc3545"; // rojo
-                        info.el.style.borderColor = "#dc3545";
-                        info.el.style.TextColor = "#fff";
+                        info.el.style.backgroundColor = "#ffd7d5"; // rojo
+                        info.el.style.borderColor = "#ffd7d5";
+                        info.el.style.color = "#f14143";
+                    }
+                    else if (estado === "En proceso") {
+                        info.el.style.backgroundColor = "#cbe4ff"; // azul
+                        info.el.style.borderColor = "#cbe4ff";
+                        info.el.style.color = "#1929A8";
                     }
                 },
             });
             calendar.render();
         });
     </script>
+
+@* 2.- Script del filtro de equipo según tipo de equipo *@
+    <script>
+        (function () {
+          const tipoSel   = document.getElementById('TipoEquipoId');
+          const equipoSel = document.getElementById('EquipoId');
+
+          async function cargarEquipos(tipoId, selectedId) {
+            equipoSel.disabled = true;
+            equipoSel.innerHTML = '<option value="">Cargando...</option>';
+            try {
+              const resp = await fetch(`/Reservas/EquiposTipo?tipoEquipoId=${encodeURIComponent(tipoId)}`);
+              if (!resp.ok) throw new Error('Error HTTP');
+              const data = await resp.json();
+
+              // Rellenar
+              const opts = ['<option value="">Seleccione un equipo</option>'];
+              for (const e of data) {
+                const selected = selectedId && String(selectedId) === String(e.equipoId) ? ' selected' : '';
+                opts.push(`<option value="${e.equipoId}"${selected}>${e.nombre}</option>`);
+              }
+              equipoSel.innerHTML = opts.join('');
+            } catch (err) {
+              console.error(err);
+              equipoSel.innerHTML = '<option value="">No se pudieron cargar los equipos</option>';
+            } finally {
+              equipoSel.disabled = false;
+            }
+          }
+
+          // Filtrar al cambiar el tipo
+          tipoSel.addEventListener('change', () => {
+            const tipoId = tipoSel.value;
+            if (!tipoId) {
+              equipoSel.innerHTML = '<option value="">Seleccione un equipo</option>';
+              return;
+            }
+            cargarEquipos(tipoId, null);
+          });
+
+          // Si el modal abre en "Editar" y ya hay un tipo seleccionado, precargar equipos
+          document.addEventListener('shown.bs.modal', function (e) {
+            if (e.target.id !== 'crearReservaModal') return;
+            const tipoId = tipoSel.value;
+            if (tipoId) {
+              const seleccionado = '@Model?.EquipoId';
+              cargarEquipos(tipoId, seleccionado && seleccionado !== '0' ? seleccionado : null);
+            }
+          });
+        })();
+    </script>
+
+@* 3.- Script para desplegar el mapa de ubicación *@
+    <script>
+        // Utilidades
+        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+        let map, marker;
+        let lastReverseQuery = null;
+
+        // Reverse geocoding con Nominatim (gratuito).
+        // Nota: Lee el comentario de producción abajo.
+        async function reverseGeocode(lat, lon) {
+          // Evita saturar si se mueve continuamente
+          if (lastReverseQuery) clearTimeout(lastReverseQuery);
+          return new Promise((resolve) => {
+            lastReverseQuery = setTimeout(async () => {
+              try {
+                const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
+                const resp = await fetch(url, {
+                  headers: { 'Accept': 'application/json' }
+                });
+                const data = await resp.json();
+                resolve(data.display_name || `${lat.toFixed(6)}, ${lon.toFixed(6)}`);
+              } catch (e) {
+                resolve(`${lat.toFixed(6)}, ${lon.toFixed(6)}`);
+              }
+            }, 350); // debounce
+          });
+        }
+
+        function ensureMap() {
+          if (map) return;
+
+            map = L.map('map', { zoomControl: true, attributionControl: true });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              maxZoom: 19, attribution: '&copy; OpenStreetMap'
+            }).addTo(map);
+
+          // Marcador draggable
+          marker = L.marker([0,0], { draggable: true }).addTo(map);
+
+          window.map = map;
+          window.marker = marker;
+
+          // Al soltar el marcador, actualizar dirección
+          marker.on('dragend', async () => {
+            const { lat, lng } = marker.getLatLng();
+            await updateAddress(lat, lng);
+          });
+
+          // Click en mapa → mover marcador
+          map.on('click', async (e) => {
+            marker.setLatLng(e.latlng);
+            await updateAddress(e.latlng.lat, e.latlng.lng);
+          });
+
+          // En Edición: centrar en coordenadas existentes si existen
+          const latInput = document.getElementById('Latitud');
+          const lonInput = document.getElementById('Longitud');
+          const hasCoords = latInput?.value && lonInput?.value;
+
+          if (hasCoords) {
+            const lat = parseFloat(latInput.value), lon = parseFloat(lonInput.value);
+            marker.setLatLng([lat, lon]);
+            map.setView([lat, lon], 17);
+          } else {
+            // En Creación: intentar geolocalizar
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                  const { latitude, longitude } = pos.coords;
+                  marker.setLatLng([latitude, longitude]);
+                  map.setView([latitude, longitude], 17);
+                  updateAddress(latitude, longitude);
+                },
+                () => {
+                  // Fallback: centramos en ubicación genérica (p. ej. Tacna)
+                  const fallback = [-18.0066, -70.2463];
+                  marker.setLatLng(fallback);
+                  map.setView(fallback, 14);
+                },
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+              );
+            } else {
+              const fallback = [-18.0066, -70.2463];
+              marker.setLatLng(fallback);
+              map.setView(fallback, 14);
+            }
+          }
+        }
+
+        async function updateAddress(lat, lon) {
+          document.getElementById('Latitud').value = lat;
+          document.getElementById('Longitud').value = lon;
+          const address = await reverseGeocode(lat, lon);
+          // No sobreescribir si el usuario ya tipeó manualmente algo muy distinto:
+          const ubicacionInput = document.getElementById('UbicacionInput');
+          ubicacionInput.value = address;
+        }
+
+        // Mostrar/ocultar el mapa dentro del modal
+        const btnElegirMapa = document.getElementById('btnElegirMapa');
+        const mapWrapper = document.getElementById('mapWrapper');
+        const btnMapa = document.getElementById('btnElegirMapa');
+        const btnUsarPunto  = document.getElementById('btnUsarPunto');
+        mapWrapper.addEventListener('shown.bs.collapse', async () => {
+          btnMapa.textContent = 'Ocultar mapa';
+          ensureMap();                  // <— aquí se crea el L.map(...) si no existe
+          await sleep(150);             // deja terminar la animación del collapse
+          if (map) map.invalidateSize();
+        });
+        mapWrapper.addEventListener('hidden.bs.collapse', () => {
+            btnMapa.textContent = 'Ver mapa';
+        });
+        btnUsarPunto.addEventListener('click', () => {
+          const collapse = bootstrap.Collapse.getOrCreateInstance(mapWrapper, { toggle: false });
+          collapse.hide();
+        });
+        // Al abrir el modal, si quieres que el mapa aparezca ya listo:
+        const crearReservaModal = document.getElementById('crearReservaModal');
+        crearReservaModal.addEventListener('shown.bs.modal', async () => {
+          // Opcional: autoabrir el mapa al abrir el modal
+          // new bootstrap.Collapse(mapWrapper, { toggle: true });
+          // await sleep(250);
+          // ensureMap(); map.invalidateSize();
+        });
+    </script>
+
+@* 4.- Script de autocomplete con Mapbox *@
+    <script>
+        (function(){
+          const MAPBOX_TOKEN = '@ViewBag.MapboxToken';
+          const input = document.getElementById('UbicacionInput');
+          const list  = document.getElementById('AutocompleteList');
+          const latEl = document.getElementById('Latitud');
+          const lonEl = document.getElementById('Longitud');
+
+          const MIN_CHARS = 2;
+          const DEBOUNCE_MS = 220;
+          let debounceTimer = null;
+          let lastResults = [];
+          let currentController = null;
+          let userProximity = null;
+
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (pos) => { userProximity = [pos.coords.longitude, pos.coords.latitude]; },
+              () => { userProximity = null; },
+              { enableHighAccuracy: true, timeout: 3000, maximumAge: 0 }
+            );
+          }
+
+          function showList(show){ list.style.display = show ? 'block' : 'none'; }
+
+          async function searchPlaces(query){
+            if (currentController) currentController.abort();
+            currentController = new AbortController();
+
+            const base = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json`;
+            const params = new URLSearchParams({
+              access_token: MAPBOX_TOKEN,
+              autocomplete: 'true',
+              limit: '8',
+              language: 'es',
+              country: 'PE'
+            });
+            if (userProximity) params.set('proximity', `${userProximity[0]},${userProximity[1]}`);
+
+            const resp = await fetch(`${base}?${params.toString()}`, { signal: currentController.signal });
+            if (!resp.ok) return [];
+            const data = await resp.json();
+            return data.features || [];
+          }
+
+          function renderList(features){
+          lastResults = features;
+          list.innerHTML = '';
+          if (!features.length){ list.style.display = 'none'; return; }
+
+          features.forEach((f, i) => {
+            const btn = document.createElement('div');          // <— usa DIV para evitar estilos de button
+            btn.className = 'list-group-item';
+            btn.textContent = f.place_name;
+            btn.dataset.index = String(i);
+            btn.addEventListener('mousedown', (e) => {          // <— mousedown evita pérdida de foco y bubbling al mapa
+              e.preventDefault();
+              selectResult(i);
+            });
+            list.appendChild(btn);
+            });
+              list.style.display = 'block';
+              list.style.position = 'absolute';
+              list.style.top = 'calc(100% + 4px)';
+              list.style.left = '0';
+              list.style.right = '0';
+            }
+
+            function showList(show){ list.style.display = show ? 'block' : 'none'; }
+
+          function selectResult(index){
+            const f = lastResults[index];
+            if (!f) return;
+            const [lon, lat] = f.center;
+
+            // 1) Setear input y coords
+            input.value = f.place_name;
+            latEl.value = lat;
+            lonEl.value = lon;
+
+            // 2) Mover marcador y centrar mapa (si existe)
+            if (window.map && window.marker) {
+              window.marker.setLatLng([lat, lon]);
+              window.map.setView([lat, lon], 17, { animate: true });
+              // Por si el mapa está recién mostrado y necesita recalcular:
+              setTimeout(() => window.map.invalidateSize(), 150);
+            }
+
+            showList(false);
+          }
+
+          // Buscar MIENTRAS escribes (no esperar Enter)
+          input.addEventListener('input', () => {
+            const q = input.value.trim();
+            if (debounceTimer) clearTimeout(debounceTimer);
+            if (q.length < MIN_CHARS){ showList(false); return; }
+
+            debounceTimer = setTimeout(async () => {
+              try {
+                const feats = await searchPlaces(q);
+                renderList(feats);
+              } catch(e){
+                if (e.name !== 'AbortError') console.error(e);
+                showList(false);
+              }
+            }, DEBOUNCE_MS);
+          });
+
+          // Enter selecciona la primera sugerencia (y no envía el form)
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              if (lastResults.length > 0) {
+                e.preventDefault();
+                selectResult(0);
+              } else {
+                e.preventDefault();
+              }
+            } else if (e.key === 'Escape') {
+              showList(false);
+            }
+          });
+
+          // Cerrar lista si clic fuera
+          document.addEventListener('click', (e) => {
+            if (!list.contains(e.target) && e.target !== input) showList(false);
+          });
+
+          // Si abres el mapa, asegúrate de que el dropdown quede por encima y de recalcular tamaño del mapa
+          const mapWrapper = document.getElementById('mapWrapper');
+          mapWrapper?.addEventListener('shown.bs.collapse', () => {
+            if (window.map) setTimeout(() => window.map.invalidateSize(), 200);
+            // (opcional) mantener el dropdown visible si el usuario sigue escribiendo
+            list.style.zIndex = 3000;
+          });
+        })();
+    </script>
+
+
 
 }

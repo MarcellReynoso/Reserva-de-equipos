@@ -1,0 +1,93 @@
+﻿@model IEnumerable<Reserva_de_equipos.Models.AreaDisponible>
+
+@{
+    ViewData["Title"] = "ReQ GoSoft | Áreas disponibles";
+}
+
+<!-- DataTables CSS y JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<h2 class="fw-lighter mb-lg-3 pb-1 h2">
+    Administrar
+    <strong class="fw-semibold">Áreas disponibles</strong>
+</h2>
+
+<div class="row justify-content-between pb-4">
+    <div class="col-auto">
+        <button class="btn btn-primary my-2 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#crearAreaDisponibleModal">
+            <iconify-icon icon="zondicons:add-solid"></iconify-icon>
+            <span>Crear nueva área disponible</span>
+        </button>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table id="AreaDisponibles" class="table table-hover w-100">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Area)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Equipo)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Area.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Equipo.Nombre)
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button type="button"
+                                    class="btn btn-warning"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editAreaDisponibleModal-@item.AreaDisponibleId">
+                                <iconify-icon icon="ri:edit-fill"></iconify-icon>
+                                <span>Editar</span>
+                            </button>
+                            <form asp-controller="AreaDisponibles" asp-action="Delete" asp-route-id="@item.AreaDisponibleId"
+                                  onclick="return confirm('¿Realmente desea borrar?');" method="post">
+                                <button class="btn btn-danger">
+                                    <iconify-icon icon="material-symbols:delete"></iconify-icon>
+                                    <span>Borrar</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@await Html.PartialAsync("_CreateAreaDisponible", new Reserva_de_equipos.Models.AreaDisponible())
+
+@foreach (var item in Model)
+{
+    @await Html.PartialAsync("_EditAreaDisponible", item)
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new DataTable('#AreaDisponibles', {
+                pageLength: 5,
+                lengthMenu: [5, 10, 15, 20, 50],
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
+                },
+            });
+        });
+    </script>
+}
+
+

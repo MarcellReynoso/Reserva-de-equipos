@@ -30,4 +30,6 @@ public partial class Usuario
     public virtual Area Area { get; set; }
 
     public virtual Rol Rol { get; set; }
+
+    public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
 }

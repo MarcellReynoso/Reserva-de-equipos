@@ -1,0 +1,47 @@
+﻿@model Reserva_de_equipos.Models.Area
+
+<div class="modal fade" id="editAreaModal-@Model.AreaId" tabindex="-1" aria-labelledby="editAreaModalLabel-@Model.AreaId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-2 py-3">
+                <h5 class="modal-title" id="editAreaModalLabel-@Model.AreaId">Editar área</h5>
+            </div>
+
+            <div class="modal-body">
+                <form asp-controller="Areas" asp-action="Edit" method="post" novalidate class="modal-form p-1">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <input type="hidden" asp-for="AreaId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Nombre" class="form-label mb-1"></label>
+                        <input asp-for="Nombre" class="form-control" />
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Descripción" class="form-label mb-1"></label>
+                        <input asp-for="Descripción" class="form-control" />
+                        <span asp-validation-for="Descripción" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="EmpresaId" class="form-label">Empresa</label>
+                        <select asp-for="EmpresaId" asp-items="ViewBag.Empresas" class="form-select">
+                            <option value="">Seleccione una empresa</option>
+                        </select>
+                        <span asp-validation-for="EmpresaId" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-2">
+                        <button type="submit" class="btn btn-primary px-4">Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

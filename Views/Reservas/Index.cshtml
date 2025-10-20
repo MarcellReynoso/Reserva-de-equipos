@@ -9,7 +9,7 @@
 
 <h2 class="fw-lighter mb-lg-3 pb-1 h2">
     Reservas de
-    <strong class="fw-semibold">@User.FindFirst("NombreApellido")?.Value</strong>
+    <strong class="fw-semibold">@User.FindFirst("NombreCompleto")?.Value</strong>
 </h2>
 
 <div class="table-responsive">
@@ -17,6 +17,7 @@
     <thead>
         <tr>
             <th class="dtr-control" style="width:1%"></th>
+            <th>Fecha</th>
             <th>Estado</th>
             <th style="width: 150px">Equipo</th>
             <th>Detalle</th>
@@ -35,13 +36,15 @@
             {
                 "Pendiente" => "bg-pendiente",
                 "Aprobado" => "bg-aprobado",
-                _ => "bg-secondary text-white"
+                "Rechazado" => "bg-rechazado",
+                "En proceso" => "bg-enProceso"
             };
 
             <tr>
                 <td class="dtr-control"></td>
-                <td class=" align-content-center">
-                    <div class="rounded-3 p-2 px-3 text-center fw-semibold @bgColor">
+                <td>@Html.DisplayFor(modelItem => item.Fecha)</td>
+                <td>
+                        <div class="rounded-3 p-2 px-3 text-center fw-semibold @bgColor" style="width: 110px">
                         @Html.DisplayFor(modelItem => item.Estado)
                     </div>
                 </td>
@@ -51,9 +54,9 @@
                 <td>@Html.DisplayFor(modelItem => item.FechaFin)</td>
                 <td>@Html.DisplayFor(modelItem => item.Indefinido)</td>
                 <td>@Html.DisplayFor(modelItem => item.Ubicación)</td>
-                <td style="width: 150px" class=" align-content-center">
+                <td style="width: 150px">
                     <div class="justify-content-start">
-                        <a class="rounded-3 p-2 px-3 text-center bg-warning" asp-action="Edit" asp-route-id="@item.ReservaId" data-edit>
+                        <a class="rounded-3 p-2 px-3 text-center btn btn-warning" asp-action="Edit" asp-route-id="@item.ReservaId" data-edit>
                             <iconify-icon icon="ri:edit-fill"></iconify-icon>
                             <span>Editar</span>
                         </a>
@@ -67,27 +70,92 @@
 
 <div id="modalHost"></div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-      new DataTable('#misReservas', {
-        responsive: true,
-        language: {
-            url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
-        },
-      });
-    });
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          new DataTable('#misReservas', {
+            pageLength: 5,
+            lengthMenu: [5, 10, 15, 20, 50],
+            responsive: true,
+            language: {
+                url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
+            },
+          });
+        });
 
-    document.addEventListener('click', async (e) => {
-    const a = e.target.closest('a[data-edit]');
-    if (!a) return;
-    e.preventDefault();
-    const html = await fetch(a.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }).then(r => r.text());
-    const host = document.getElementById('modalHost');
-    host.innerHTML = html;
-    const modalEl = document.getElementById('crearReservaModal') || document.getElementById('reservaModal');
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
-    });
+        document.addEventListener('click', async (e) => {
+        const a = e.target.closest('a[data-edit]');
+        if (!a) return;
+        e.preventDefault();
+        const html = await fetch(a.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }).then(r => r.text());
+        const host = document.getElementById('modalHost');
+        host.innerHTML = html;
+        const modalEl = document.getElementById('crearReservaModal') || document.getElementById('reservaModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+        });
+    </script>
+
+    <script>
+        (function () {
+          async function cargarEquipos(modal, tipoId, selectedId) {
+            const equipoSel = modal.querySelector('#EquipoId');
+            if (!equipoSel) return;
+
+            equipoSel.disabled = true;
+            equipoSel.innerHTML = '<option value="">Cargando...</option>';
+            try {
+              const url = '@Url.Action("EquiposTipo", "Reservas")' + `?tipoEquipoId=${encodeURIComponent(tipoId)}`;
+              const resp = await fetch(url);
+              if (!resp.ok) throw new Error('HTTP');
+
+              const data = await resp.json(); // [{equipoId,nombre}, ...]
+              const opts = ['<option value="">Seleccione un equipo</option>'];
+              for (const e of data) {
+                const sel = selectedId && String(selectedId) === String(e.equipoId) ? ' selected' : '';
+                opts.push(`<option value="${e.equipoId}"${sel}>${e.nombre}</option>`);
+              }
+              equipoSel.innerHTML = opts.join('');
+            } catch (err) {
+              console.error(err);
+              equipoSel.innerHTML = '<option value="">No se pudieron cargar los equipos</option>';
+            } finally {
+              equipoSel.disabled = false;
+            }
+          }
+
+          // Cuando se muestra el modal cargado por AJAX
+          document.addEventListener('shown.bs.modal', function (ev) {
+            const modal = ev.target;
+            if (modal.id !== 'crearReservaModal') return;
+
+            const tipoSel   = modal.querySelector('#TipoEquipoId');
+            const equipoSel = modal.querySelector('#EquipoId');
+            if (!tipoSel || !equipoSel) return;
+
+            // 1) Precarga en EDIT: tomar el EquipoId actual y recargar la lista según el tipo
+            const equipoActual = equipoSel.value;       // lo que vino del servidor en el partial
+            const tipoActual   = tipoSel.value;         // seleccionado en el partial
+            if (tipoActual) {
+              cargarEquipos(modal, tipoActual, equipoActual);
+            }
+
+            if (!tipoSel.dataset.bound) {             // evita duplicar handlers
+              tipoSel.addEventListener('change', () => {
+                const t = tipoSel.value;
+                if (!t) {
+                  equipoSel.innerHTML = '<option value="">Seleccione un equipo</option>';
+                  return;
+                }
+                // al cambiar el tipo, no mantener selección previa
+                cargarEquipos(modal, t, null);
+              });
+              tipoSel.dataset.bound = '1';
+            }
+          });
+        })();
+    </script>
+
+}
 
 
-</script>
