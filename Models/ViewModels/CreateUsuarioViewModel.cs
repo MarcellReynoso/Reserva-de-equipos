@@ -8,36 +8,38 @@ namespace Reserva_de_equipos.Models.ViewModels
     {
         public int UsuarioId { get; set; }
 
-        [Required(ErrorMessage = "Campo obligatorio.")]
+        [Required(ErrorMessage = "El nombre es obligatorio.")]
+        [Display(Name = "Nombre (*)")]
         public string Nombre { get; set; }
 
         [Display(Name = "Segundo nombre")]
         public string SegundoNombre { get; set; }
 
-        [Required(ErrorMessage = "Campo obligatorio.")]
-        [Display(Name = "Apellido paterno")]
+        [Required(ErrorMessage = "El apellido paterno obligatorio.")]
+        [Display(Name = "Apellido paterno (*)")]
         public string ApellidoPaterno { get; set; }
 
         [Display(Name = "Apellido materno")]
         public string ApellidoMaterno { get; set; }
 
-        [Required(ErrorMessage = "Campo obligatorio.")]
+        [Required(ErrorMessage = "El correo electronico obligatorio.")]
         [EmailAddress(ErrorMessage = "Correo electrónico no válido.")]
+        [Display(Name = "Correo (*)")]
         public string Correo { get; set; }
 
-        [Required(ErrorMessage = "Campo obligatorio.")]
+        [Required(ErrorMessage = "La contrasena es obligatoria.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Contraseña")]
+        [Display(Name = "Contraseña (*)")]
         public string Password { get; set; }
 
-        [Required(ErrorMessage = "Campo obligatorio.")]
+        [Required(ErrorMessage = "Debe confirmar la contrasena.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Confirmar contraseña")]
-        [Compare("Password", ErrorMessage = "Las contraseñas no coinciden.")]
+        [Display(Name = "Confirmar contraseña (*)")]
+        [Compare("Password", ErrorMessage = "Las contrasenas no coinciden.")]
         public string ConfirmPassword { get; set; }
 
-        [Required(ErrorMessage = "Campo obligatorio.")]
-        [Display(Name = "Nombre de usuario")]
+        [Required(ErrorMessage = "El nombre de usuario obligatorio.")]
+        [Display(Name = "Nombre de usuario (*)")]
         public string Username { get; set; }
 
         public bool Activo { get; set; }

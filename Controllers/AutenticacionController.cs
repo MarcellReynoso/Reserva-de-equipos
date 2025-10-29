@@ -45,7 +45,7 @@ namespace Reserva_de_equipos.Controllers
             // Usuario no existe
             if (user == null)
             {
-                ViewData["Mensaje"] = "Usuario o contraseña inválida.";
+                ViewData["Mensaje"] = "El usuario no existe.";
                 return View("Index");
             }
 
@@ -59,7 +59,7 @@ namespace Reserva_de_equipos.Controllers
             // Contraseña incorrecta
             if (!string.Equals(user.Password, passwordHashed, StringComparison.Ordinal))
             {
-                ViewData["Mensaje"] = "Usuario o contraseña inválida.";
+                ViewData["Mensaje"] = "Contraseña inválida.";
                 return View("Index");
             }
 

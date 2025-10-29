@@ -10,20 +10,20 @@
                 <form asp-controller="Areas" asp-action="Create" method="post" novalidate class="modal-form p-1">
                     @Html.AntiForgeryToken()
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
-                    <div class="row mb-3">
+                    <div class="mb-3">
                         <label asp-for="Nombre" class="form-label mb-1"></label>
-                        <input asp-for="Nombre" class="form-control" />
+                        <input asp-for="Nombre" class="form-control" autocomplete="off" autofocus />
                         <span asp-validation-for="Nombre" class="text-danger"></span>
                     </div>
-                    <div class="row mb-3">
+                    <div class="mb-3">
                         <label asp-for="Descripción" class="form-label mb-1"></label>
-                        <input asp-for="Descripción" class="form-control" />
+                        <textarea asp-for="Descripción" class="form-control" rows="3"></textarea>
                         <span asp-validation-for="Descripción" class="text-danger"></span>
                     </div>
-                    <div class="row mb-3">
+                    <div class="mb-3">
                         <label asp-for="EmpresaId" class="form-label">Empresa</label>
                         <select asp-for="EmpresaId" asp-items="ViewBag.Empresas" class="form-select">
-                            <option value="" disabled selected>Seleccione un área</option>
+                            <option value="" disabled selected>Seleccione una empresa</option>
                         </select>
                         <span asp-validation-for="EmpresaId" class="text-danger"></span>
                     </div>

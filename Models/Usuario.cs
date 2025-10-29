@@ -31,5 +31,7 @@ public partial class Usuario
 
     public virtual Rol Rol { get; set; }
 
+    public virtual Responsable Responsable { get; set; }
+
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
 }

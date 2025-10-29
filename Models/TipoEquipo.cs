@@ -12,5 +12,7 @@ public partial class TipoEquipo
 
     public string Descripcion { get; set; }
 
+    public string? IconoUrl { get; set; }
+
     public virtual ICollection<Equipo> Equipos { get; set; } = new List<Equipo>();
 }

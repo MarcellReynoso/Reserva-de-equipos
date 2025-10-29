@@ -39,11 +39,17 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
+                            <a asp-area="" asp-controller="Reservas" asp-action="Buscar" class="sidebar-link" aria-expanded="false">
+                                <iconify-icon icon="fa-solid:calendar-alt"></iconify-icon>
+                                <span class="hide-menu">Reservar</span>
+                            </a>
+                        </li>
+@*                         <li class="sidebar-item">
                             <a asp-area="" asp-controller="Calendario" asp-action="Index" class="sidebar-link" aria-expanded="false">
                                 <iconify-icon icon="fa-solid:calendar-alt"></iconify-icon>
                                 <span class="hide-menu">Calendario</span>
                             </a>
-                        </li>
+                        </li> *@
                         <!-- ---------------------------------- -->
                         <!-- Dashboard -->
                         <!-- ---------------------------------- -->
@@ -54,137 +60,151 @@
                             </a>
                         </li>
 
-                        <li class="sidebar-item">
-                            <a asp-area="" asp-controller="Reservas" asp-action="Pendientes" class="sidebar-link" aria-expanded="false">
-                                <iconify-icon icon="tdesign:calendar-2-filled"></iconify-icon>
-                                <span class="hide-menu">Reservas pendientes</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-item">
-                            <a asp-area="" asp-controller="Reservas" asp-action="EnProceso" class="sidebar-link" aria-expanded="false">
-                                <iconify-icon icon="fluent:calendar-clock-32-filled"></iconify-icon>
-                                <span class="hide-menu">Reservas en Proceso</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-item">
+                        @*<li class="sidebar-item">
                             <a asp-area="" asp-controller="Reportes" asp-action="Index" class="sidebar-link" aria-expanded="false">
                                 <iconify-icon icon="ion:bar-chart"></iconify-icon>
                                 <span class="hide-menu">Reportabilidad</span>
                             </a>
-                        </li>
+                        </li> *@
 
-                        <li>
-                            <span class="sidebar-divider lg"></span>
-                        </li>
-                        <li class="nav-small-cap">
-                            <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
-                            <span class="hide-menu">Administración</span>
-                        </li>
+                        @if (User.IsInRole("Responsable"))
+                        {
+                            <li>
+                                <span class="sidebar-divider lg"></span>
+                            </li>
+                            <li class="nav-small-cap">
+                                <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                                <span class="hide-menu">Responsable</span>
+                            </li>
 
-                        <li class="sidebar-item">
-                            <a class="sidebar-link justify-content-between"
-                               asp-controller="Conductores" asp-action="Index">
-                                <div class="d-flex align-items-center gap-3">
-                                    <iconify-icon icon="mdi:drivers-license"></iconify-icon>
-                                    <span class="hide-menu">Conductor</span>
-                                </div>
-                            </a>
-                        </li>
+                            <li class="sidebar-item">
+                                <a asp-area="" asp-controller="Reservas" asp-action="EnProceso" class="sidebar-link" aria-expanded="false">
+                                    <iconify-icon icon="fluent:calendar-clock-32-filled"></iconify-icon>
+                                    <span class="hide-menu">Reservas en Proceso</span>
+                                </a>
+                            </li>
 
-                        <li class="sidebar-item">
-                            <a class="sidebar-link justify-content-between"
-                               asp-controller="Equipos" asp-action="Index">
-                                <div class="d-flex align-items-center gap-3">
-                                    <iconify-icon icon="mdi:truck"></iconify-icon>
-                                    <span class="hide-menu">Equipo</span>
-                                </div>
-                            </a>
-                        </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link justify-content-between"
+                                   asp-controller="Equipos" asp-action="Index">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <iconify-icon icon="mdi:truck"></iconify-icon>
+                                        <span class="hide-menu">Equipos</span>
+                                    </div>
+                                </a>
+                            </li>
+                        }
 
-                        <li class="sidebar-item">
-                            <a asp-area="" asp-controller="Usuarios" asp-action="Index" class="sidebar-link" aria-expanded="false">
-                                <iconify-icon icon="mdi:users"></iconify-icon>
-                                <span class="hide-menu">Usuarios</span>
-                            </a>
-                        </li>
+                        @if (User.IsInRole("Administrador"))
+                        {
+                            <li>
+                                <span class="sidebar-divider lg"></span>
+                            </li>
+                            <li class="nav-small-cap">
+                                <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                                <span class="hide-menu">Administración</span>
+                            </li>
 
-                        <li class="sidebar-item">
-                            <a class="sidebar-link justify-content-start has-arrow" href="javascript:void(0)" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="d-flex">
-                                        <iconify-icon icon="vscode-icons:file-type-light-config"></iconify-icon>
-                                    </span>
-                                    <span class="hide-menu">Configuración</span>
-                                </div>
+                            <li class="sidebar-item">
+                                <a asp-area="" asp-controller="Reservas" asp-action="Pendientes" class="sidebar-link" aria-expanded="false">
+                                    <iconify-icon icon="tdesign:calendar-2-filled"></iconify-icon>
+                                    <span class="hide-menu">Reservas pendientes</span>
+                                </a>
+                            </li>
 
-                            </a>
-                            <ul aria-expanded="false" class="collapse first-level">
-                                <li class="sidebar-item">
-                                    <a asp-controller="Areas" asp-action="Index" class="sidebar-link justify-content-between">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <iconify-icon icon="ic:outline-place"></iconify-icon>
-                                            <span class="hide-menu">Área</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between"
-                                    asp-controller="AreaDisponibles" asp-action="Index"
-                                       >
-                                        <div class="d-flex align-items-center gap-3">
-                                            <iconify-icon icon="ic:round-place"></iconify-icon>
-                                            <span class="hide-menu">Área disponible</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between"
-                                       asp-controller="Empresas" asp-action="Index">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <iconify-icon icon="ic:baseline-business"></iconify-icon>
-                                            <span class="hide-menu">Empresa</span>
-                                        </div>
-                                    </a>
-                                </li>
+                            <li class="sidebar-item">
+                                <a asp-area="" asp-controller="Usuarios" asp-action="Index" class="sidebar-link" aria-expanded="false">
+                                    <iconify-icon icon="mdi:users"></iconify-icon>
+                                    <span class="hide-menu">Usuarios</span>
+                                </a>
+                            </li>
 
-                               @*<li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" target="_blank"
-                                       href="https://bootstrapdemos.wrappixel.com/materialM/dist/main/ui-accordian.html">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <iconify-icon icon="famicons:calendar-sharp"></iconify-icon>
-                                            <span class="hide-menu">Reserva</span>
-                                        </div>
-                                    </a>
-                                </li> *@
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" 
-                                    asp-controller="Responsables" asp-action="Index">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <iconify-icon icon="ix:work-case-filled"></iconify-icon>
-                                            <span class="hide-menu">Reponsable</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" asp-controller="Roles" asp-action="Index">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <iconify-icon icon="eos-icons:role-binding"></iconify-icon>
-                                            <span class="hide-menu">Rol</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link justify-content-between" asp-controller="TipoEquipos" asp-action="Index">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <iconify-icon icon="fa7-solid:truck"></iconify-icon>
-                                            <span class="hide-menu">Tipo de equipo</span>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link justify-content-between"
+                                   asp-controller="Conductores" asp-action="Index">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <iconify-icon icon="mdi:drivers-license"></iconify-icon>
+                                        <span class="hide-menu">Conductores</span>
+                                    </div>
+                                </a>
+                            </li>
+
+                            <li class="sidebar-item">
+                                <a class="sidebar-link justify-content-between"
+                                   asp-controller="Equipos" asp-action="Buscar">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <iconify-icon icon="mdi:truck"></iconify-icon>
+                                        <span class="hide-menu">Equipos</span>
+                                    </div>
+                                </a>
+                            </li>
+
+                            <li class="sidebar-item">
+                                <a class="sidebar-link justify-content-start has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="d-flex">
+                                            <iconify-icon icon="vscode-icons:file-type-light-config"></iconify-icon>
+                                        </span>
+                                        <span class="hide-menu">Configuración</span>
+                                    </div>
+
+                                </a>
+                                <ul aria-expanded="false" class="collapse first-level">
+                                    <li class="sidebar-item">
+                                        <a asp-controller="Areas" asp-action="Index" class="sidebar-link justify-content-between">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <iconify-icon icon="ic:outline-place"></iconify-icon>
+                                                <span class="hide-menu">Área</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="sidebar-item">
+                                        <a class="sidebar-link justify-content-between"
+                                           asp-controller="AreaDisponibles" asp-action="Index">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <iconify-icon icon="ic:round-place"></iconify-icon>
+                                                <span class="hide-menu">Área disponible</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="sidebar-item">
+                                        <a class="sidebar-link justify-content-between"
+                                           asp-controller="Empresas" asp-action="Index">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <iconify-icon icon="ic:baseline-business"></iconify-icon>
+                                                <span class="hide-menu">Empresa</span>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li class="sidebar-item">
+                                        <a class="sidebar-link justify-content-between"
+                                           asp-controller="Responsables" asp-action="Index">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <iconify-icon icon="ix:work-case-filled"></iconify-icon>
+                                                <span class="hide-menu">Reponsable</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="sidebar-item">
+                                        <a class="sidebar-link justify-content-between" asp-controller="Roles" asp-action="Index">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <iconify-icon icon="eos-icons:role-binding"></iconify-icon>
+                                                <span class="hide-menu">Rol</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="sidebar-item">
+                                        <a class="sidebar-link justify-content-between" asp-controller="TipoEquipos" asp-action="Index">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <iconify-icon icon="fa7-solid:truck"></iconify-icon>
+                                                <span class="hide-menu">Tipo de equipo</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
 
                     </ul>
                 </nav>

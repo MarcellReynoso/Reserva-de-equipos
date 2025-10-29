@@ -1,0 +1,62 @@
+﻿@model Reserva_de_equipos.Models.Equipo
+
+<div class="modal fade" id="readOnlyEquipoModal-@Model.EquipoId" tabindex="-1"
+     aria-labelledby="readOnlyEquipoModalLabel-@Model.EquipoId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-2 py-3">
+                <h5 class="modal-title" id="readOnlyEquipoModalLabel-@Model.EquipoId">Detalle del equipo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="p-1">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input class="form-control" value="@Model.Nombre" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de equipo</label>
+                        <input class="form-control" value="@(Model.TipoEquipo?.Nombre ?? "")" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Responsable</label>
+                        <input class="form-control" value="@(Model.Responsable?.Nombre ?? "")" readonly />
+                    </div>
+
+                    <div class="row align-items-center g-2 mb-3">
+                        <div class="col-6">
+                            <label class="col-form-label fw-semibold">Fecha de inicio</label>
+                            <input type="text" class="form-control"
+                                   value="@(Model.FechaInicio?.ToString("yyyy-MM-dd HH:mm") ?? "")" readonly />
+                        </div>
+                        <div class="col-6">
+                            <label class="col-form-label fw-semibold">Fecha fin</label>
+                            <input type="text" class="form-control"
+                                   value="@(Model.FechaFin?.ToString("yyyy-MM-dd HH:mm") ?? "")" readonly />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" rows="3" readonly>@Model.Descripcion</textarea>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Imagen del equipo</label>
+                        <div class="d-flex justify-content-center mt-2">
+                            <img src="@(!string.IsNullOrEmpty(Model.ImagenUrl) ? Model.ImagenUrl : "/assets/images/placeholder.png")"
+                                 class="img-fluid rounded"
+                                 style="max-height:160px;" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 pt-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

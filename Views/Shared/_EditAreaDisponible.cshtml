@@ -16,7 +16,7 @@
 
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
-                    <div class="row mb-3">
+                    <div class="mb-3">
                         <label asp-for="AreaId" class="form-label">Área</label>
                         <select asp-for="AreaId" class="form-select" asp-items="ViewBag.Areas">
                             <option value="" disabled>Seleccione un área</option>   
@@ -24,7 +24,7 @@
                         <span asp-validation-for="AreaId" class="text-danger"></span>
                     </div>
 
-                    <div class="row mb-3">
+                    <div class="mb-3">
                         <label asp-for="EquipoId" class="form-label">Equipo</label>
                         <select asp-for="EquipoId" class="form-select" asp-items="ViewBag.Equipos">
                             <option value="" disabled>Seleccione un equipo</option> 

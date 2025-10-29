@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Reserva_de_equipos.Models.Reserva>
 
 @{
-    ViewData["Title"] = "Mis Reservas";
+    ViewData["Title"] = "ReQ GoSoft | Mis Reservas";
 }
 
 <!-- DataTables CSS y JS -->
@@ -17,6 +17,7 @@
     <thead>
         <tr>
             <th class="dtr-control" style="width:1%"></th>
+            <th>Ícono</th>
             <th>Fecha</th>
             <th>Estado</th>
             <th style="width: 150px">Equipo</th>
@@ -24,7 +25,6 @@
             <th>Inicio</th>
             <th>Fin</th>
             <th>Indefinido</th>
-            <th>@Html.DisplayNameFor(model => model.Ubicación)</th>
             <th></th>
         </tr>
     </thead>
@@ -37,11 +37,22 @@
                 "Pendiente" => "bg-pendiente",
                 "Aprobado" => "bg-aprobado",
                 "Rechazado" => "bg-rechazado",
-                "En proceso" => "bg-enProceso"
+                "En proceso" => "bg-enProceso",
+                _ => ""
             };
 
             <tr>
                 <td class="dtr-control"></td>
+                <td class="text-center">
+                    <img src="@Url.Content(item.Equipo.TipoEquipo.IconoUrl)"
+                         alt="icono"
+                         style=
+                         "
+                            width:48px;
+                            height:48px;
+                            object-fit:contain
+                         " />
+                </td>
                 <td>@Html.DisplayFor(modelItem => item.Fecha)</td>
                 <td>
                         <div class="rounded-3 p-2 px-3 text-center fw-semibold @bgColor" style="width: 110px">
@@ -53,12 +64,11 @@
                 <td>@Html.DisplayFor(modelItem => item.FechaInicio)</td>
                 <td>@Html.DisplayFor(modelItem => item.FechaFin)</td>
                 <td>@Html.DisplayFor(modelItem => item.Indefinido)</td>
-                <td>@Html.DisplayFor(modelItem => item.Ubicación)</td>
                 <td style="width: 150px">
                     <div class="justify-content-start">
-                        <a class="rounded-3 p-2 px-3 text-center btn btn-warning" asp-action="Edit" asp-route-id="@item.ReservaId" data-edit>
-                            <iconify-icon icon="ri:edit-fill"></iconify-icon>
-                            <span>Editar</span>
+                        <a asp-action="Details" asp-route-id="@item.ReservaId" data-edit
+                           class="btn btn-primary d-inline-flex col-lg-auto col-auto">
+                            <span>Ver detalles</span>
                         </a>
                     </div>
                 </td>
@@ -71,6 +81,7 @@
 <div id="modalHost"></div>
 
 @section Scripts {
+    @* 1. Calendario *@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
           new DataTable('#misReservas', {
@@ -96,66 +107,20 @@
         });
     </script>
 
+    @* 2. Ver detalles de reserva *@
     <script>
-        (function () {
-          async function cargarEquipos(modal, tipoId, selectedId) {
-            const equipoSel = modal.querySelector('#EquipoId');
-            if (!equipoSel) return;
-
-            equipoSel.disabled = true;
-            equipoSel.innerHTML = '<option value="">Cargando...</option>';
-            try {
-              const url = '@Url.Action("EquiposTipo", "Reservas")' + `?tipoEquipoId=${encodeURIComponent(tipoId)}`;
-              const resp = await fetch(url);
-              if (!resp.ok) throw new Error('HTTP');
-
-              const data = await resp.json(); // [{equipoId,nombre}, ...]
-              const opts = ['<option value="">Seleccione un equipo</option>'];
-              for (const e of data) {
-                const sel = selectedId && String(selectedId) === String(e.equipoId) ? ' selected' : '';
-                opts.push(`<option value="${e.equipoId}"${sel}>${e.nombre}</option>`);
-              }
-              equipoSel.innerHTML = opts.join('');
-            } catch (err) {
-              console.error(err);
-              equipoSel.innerHTML = '<option value="">No se pudieron cargar los equipos</option>';
-            } finally {
-              equipoSel.disabled = false;
-            }
-          }
-
-          // Cuando se muestra el modal cargado por AJAX
-          document.addEventListener('shown.bs.modal', function (ev) {
-            const modal = ev.target;
-            if (modal.id !== 'crearReservaModal') return;
-
-            const tipoSel   = modal.querySelector('#TipoEquipoId');
-            const equipoSel = modal.querySelector('#EquipoId');
-            if (!tipoSel || !equipoSel) return;
-
-            // 1) Precarga en EDIT: tomar el EquipoId actual y recargar la lista según el tipo
-            const equipoActual = equipoSel.value;       // lo que vino del servidor en el partial
-            const tipoActual   = tipoSel.value;         // seleccionado en el partial
-            if (tipoActual) {
-              cargarEquipos(modal, tipoActual, equipoActual);
-            }
-
-            if (!tipoSel.dataset.bound) {             // evita duplicar handlers
-              tipoSel.addEventListener('change', () => {
-                const t = tipoSel.value;
-                if (!t) {
-                  equipoSel.innerHTML = '<option value="">Seleccione un equipo</option>';
-                  return;
-                }
-                // al cambiar el tipo, no mantener selección previa
-                cargarEquipos(modal, t, null);
-              });
-              tipoSel.dataset.bound = '1';
-            }
-          });
-        })();
+        document.addEventListener('click', async (e) => {
+        const a = e.target.closest('a[data-edit]');
+        if (!a) return;
+        e.preventDefault();
+        const html = await fetch(a.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }).then(r => r.text());
+        const host = document.getElementById('modalHost');
+        host.innerHTML = html;
+        const modalEl = document.getElementById('crearReservaModal') || document.getElementById('reservaModal') || document.getElementById('readOnlyReservaModal');;
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+        });
     </script>
-
 }
 
 

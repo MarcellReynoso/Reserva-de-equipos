@@ -25,7 +25,7 @@
     <table id="Equipos" class="table table-hover w-100">
         <thead>
             <tr>
-                <th>Disponible</th>
+                <th style="width:48px;">Ícono</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Responsable</th>
@@ -37,7 +37,15 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@Html.DisplayFor(modelItem => item.Disponible)</td>
+                    <td class="text-center">
+                        <img src="@Url.Content(item.TipoEquipo.IconoUrl)"
+                             alt="icono"
+                             style="
+                                    width:48px;
+                                    height:48px;
+                                    object-fit:contain
+                                    " />
+                    </td>
                     <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
                     <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
                     <td>@Html.DisplayFor(modelItem => item.Responsable.Nombre)</td>
@@ -75,6 +83,7 @@
 }
 
 @section Scripts {
+@* 1. Render de la tabla *@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             new DataTable('#Equipos', {
@@ -85,6 +94,22 @@
                     url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
                 },
             });
+        });
+    </script>
+
+
+@* 2. Previsualización de las img *@
+    <script>
+        document.addEventListener('change', (e) => {
+          if (e.target.matches('input[type="file"][name="imagen"]')) {
+            const file = e.target.files?.[0];
+            const img  = e.target.closest('form')?.querySelector('#preview');
+            if (!img) return;
+            if (!file) { img.classList.add('d-none'); img.src = ''; return; }
+            if (file.size > 5 * 1024 * 1024) { alert('La imagen supera los 5 MB'); e.target.value = ''; return; }
+            img.src = URL.createObjectURL(file);
+            img.classList.remove('d-none');
+          }
         });
     </script>
 }

@@ -87,9 +87,16 @@ namespace Reserva_de_equipos.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
         {
-            var entity = await _context.Conductores.FindAsync(id);
+            var entity = await _context.Conductores
+                .Include(e => e.Reservas)
+                .FirstOrDefaultAsync(e => e.ConductorId == id);
             if (entity != null)
             {
+                if (entity.Reservas.Any())
+                {
+                    TempData["Mensaje"] = "No es posible borrar. El conductor tiene reservas asociadas.";
+                    return RedirectToAction(nameof(Index));
+                }
                 _context.Conductores.Remove(entity);
                 await _context.SaveChangesAsync();
                 TempData["Mensaje"] = "Conductor eliminado correctamente.";

@@ -1,0 +1,22 @@
+19:27:47 - Imagen guardada: C:\Users\MARCELL\source\repos\Reserva de equipos\wwwroot\assets/images/products\04ec80bfcc4e4cbb9162280f70831ff4.jpg
+URL registrada: /assets/images/products/04ec80bfcc4e4cbb9162280f70831ff4.jpg
+20:01:55 - Imagen guardada: C:\Users\MARCELL\source\repos\Reserva de equipos\wwwroot\assets/images/products\d54c87c392b34ff48d4cf2864a0b8729.jpg
+URL registrada: /assets/images/products/d54c87c392b34ff48d4cf2864a0b8729.jpg
+20:02:11 - Imagen guardada: C:\Users\MARCELL\source\repos\Reserva de equipos\wwwroot\assets/images/products\c0f2833259e84c08b2a247271bca9a2f.jpg
+URL registrada: /assets/images/products/c0f2833259e84c08b2a247271bca9a2f.jpg
+20:02:34 - Imagen guardada: C:\Users\MARCELL\source\repos\Reserva de equipos\wwwroot\assets/images/products\298adb0b61b34c0c93b6f545daaf446c.jpg
+URL registrada: /assets/images/products/298adb0b61b34c0c93b6f545daaf446c.jpg
+10:21:06 - Imagen guardada: C:\Users\MARCELL\source\repos\Reserva de equipos\wwwroot\assets/images/products\46862cb392e44db18f2db88a94330a2f.jpg
+URL registrada: /assets/images/products/46862cb392e44db18f2db88a94330a2f.jpg
+10:21:36 - Imagen guardada: C:\Users\MARCELL\source\repos\Reserva de equipos\wwwroot\assets/images/products\6a92d0f33dac4b6982a37364f5d66d60.jpg
+URL registrada: /assets/images/products/6a92d0f33dac4b6982a37364f5d66d60.jpg
+10:21:51 - Imagen guardada: C:\Users\MARCELL\source\repos\Reserva de equipos\wwwroot\assets/images/products\17c45de60a5b47edbf91470c4773b6aa.jpg
+URL registrada: /assets/images/products/17c45de60a5b47edbf91470c4773b6aa.jpg
+10:23:24 - Imagen guardada: C:\Users\MARCELL\source\repos\Reserva de equipos\wwwroot\assets/images/products\2ac6cb62ef4345048934d654e276b5e1.jpg
+URL registrada: /assets/images/products/2ac6cb62ef4345048934d654e276b5e1.jpg
+10:26:42 - Imagen guardada: C:\Users\MARCELL\source\repos\Reserva de equipos\wwwroot\assets/images/products\c92d75fbbf234d408b17ed32de1dbe0f.jpg
+URL registrada: /assets/images/products/c92d75fbbf234d408b17ed32de1dbe0f.jpg
+10:27:24 - Imagen guardada: C:\Users\MARCELL\source\repos\Reserva de equipos\wwwroot\assets/images/products\8f7ee0ad458e4fd9ab58c5be2b81b41c.jpg
+URL registrada: /assets/images/products/8f7ee0ad458e4fd9ab58c5be2b81b41c.jpg
+17:50:24 - Imagen guardada: C:\Users\MARCELL\source\repos\Reserva de equipos\wwwroot\assets/images/products\c947d2f5da434e5d91cd43fcc6d88d85.jpg
+URL registrada: /assets/images/products/c947d2f5da434e5d91cd43fcc6d88d85.jpg

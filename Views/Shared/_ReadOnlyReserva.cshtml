@@ -15,6 +15,14 @@
                 <div class="modal-body">
                     <input type="hidden" asp-for="ReservaId" />
 
+                    @* Usuario *@
+                    <div class="row align-items-center g-2 mb-3">
+                        <label class="form-label">Usuario</label>
+                        <input class="form-control"
+                               value="@($"{Model?.usuario?.Nombre} {Model?.usuario?.ApellidoPaterno}".Trim())"
+                               readonly />
+                    </div>
+
                     <!-- Estado y fecha (solo lectura) -->
                     <div class="row align-items-center g-2 mb-3">
                         <div class="col-6">
@@ -35,7 +43,6 @@
                                 <option value="">—</option>
                             </select>
                             <script>
-                                // Seleccionar el tipo correspondiente (si vino del servidor en el combo)
                                 (function(){
                                   const sel = document.currentScript.previousElementSibling;
                                   if (sel && '@Model.Equipo?.TipoEquipoId' !== '') sel.value = '@Model.Equipo?.TipoEquipoId';

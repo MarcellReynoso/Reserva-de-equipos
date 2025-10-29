@@ -7,13 +7,13 @@
         <h5 class="modal-title" id="crearTipoEquipoModalLabel">Crear tipo de equipo</h5>
       </div>
       <div class="modal-body">
-        <form asp-action="Create" method="post" novalidate class="modal-form p-1">
+        <form asp-action="Create" method="post" enctype="multipart/form-data" novalidate class="modal-form p-1">
           @Html.AntiForgeryToken()
           <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
           <div class="mb-3">
             <label asp-for="Nombre" class="form-label">Nombre (*)</label>
-            <input asp-for="Nombre" class="form-control" />
+            <input asp-for="Nombre" class="form-control" autocomplete="off" />
             <span asp-validation-for="Nombre" class="text-danger"></span>
           </div>
 
@@ -23,7 +23,16 @@
             <span asp-validation-for="Descripcion" class="text-danger"></span>
           </div>
 
-          <div class="d-flex justify-content-end gap-2 pt-2">
+          <div class="mb-2">
+              <label class="form-label">Ícono (PNG/JPG/SVG)</label>
+              <input type="file" name="icon" accept="image/*" class="form-control" />
+          </div>
+
+          <small class="form-text text-muted">
+              El icono debe ser una imagen (png/jpg/svg) y no debe superar 512KB.
+          </small>
+
+          <div class="d-flex justify-content-end align-items-center gap-2 pt-2">
             <button type="submit" class="btn btn-primary px-4">Guardar</button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
           </div>

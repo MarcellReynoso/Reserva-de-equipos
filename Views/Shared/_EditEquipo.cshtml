@@ -9,7 +9,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <form asp-action="Edit" method="post" novalidate class="modal-form p-1">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data" novalidate class="modal-form p-1">
                     @Html.AntiForgeryToken()
 
                     <input type="hidden" asp-for="EquipoId" />
@@ -38,16 +38,42 @@
                         <span asp-validation-for="ResponsableId" class="text-danger"></span>
                     </div>
 
+                    <div class="row align-items-center g-2 mb-3">
+                        <div class="col-6">
+                            <div class="text-sm-start">
+                                <label asp-for="FechaInicio" class="col-form-label fw-semibold">Fecha de inicio (*)</label>
+                            </div>
+                            <div class="">
+                                <input asp-for="FechaInicio" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="FechaInicio" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-sm-start">
+                                <label asp-for="FechaFin" class="col-form-label fw-semibold"></label>
+                            </div>
+                            <div class="">
+                                <input asp-for="FechaFin" type="datetime-local" class="form-control" id="FechaFin" />
+                                <span asp-validation-for="FechaFin" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label asp-for="Descripcion" class="form-label">Descripción</label>
                         <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
                         <span asp-validation-for="Descripcion" class="text-danger"></span>
                     </div>
 
-                    <div class="form-check mb-3">
-                        <input asp-for="Disponible" class="form-check-input" id="Activo-@Model.EquipoId" />
-                        <label for="Activo-@Model.EquipoId" class="form-check-label">Disponible (*)</label>
-                        <span asp-validation-for="Disponible" class="text-danger"></span>
+                    <div class="mb-3">
+                        <label class="form-label">Imagen del equipo</label>
+                        <input type="file" name="imagen" accept="image/*" class="form-control" onchange="previewEdit(this, '@Model.EquipoId')" />
+                        <div class="d-flex justify-content-center mt-2">
+                            <img id="preview-@Model.EquipoId"
+                                 src="@(!string.IsNullOrEmpty(Model.ImagenUrl) ? Model.ImagenUrl : "/assets/images/placeholder.png")"
+                                 class="img-fluid rounded"
+                                 style="max-height:160px;" />
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 pt-2">
@@ -59,3 +85,18 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function previewEdit(input, id) {
+            const file = input.files[0];
+            const preview = document.getElementById('preview-' + id);
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => { preview.src = e.target.result; };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+}
+

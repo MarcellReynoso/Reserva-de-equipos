@@ -18,11 +18,13 @@ namespace Reserva_de_equipos.Controllers
             _context = context;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var reservas = await _context.Reservas
                 .Include(r => r.Equipo)
+                    .ThenInclude(e => e.TipoEquipo)
                 .Where(r => r.UsuarioId == usuarioId)
                 .OrderByDescending(r => r.Fecha)
                 .ToListAsync();
@@ -58,7 +60,7 @@ namespace Reserva_de_equipos.Controllers
                 };
                 _context.Add(nuevaReserva);
                 await _context.SaveChangesAsync();
-                TempData["Mensaje"] = "Reserva creada exitosamente";
+                TempData["Mensaje"] = "Reserva creada exitosamente.";
                 return RedirectToAction("Index", "Calendario");
             }
             TempData["Mensaje"] = "Error al crear la reserva. Por favor, intentelo nuevamente.";
@@ -128,6 +130,8 @@ namespace Reserva_de_equipos.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var reserva = await _context.Reservas
+                .AsNoTracking()
+                .Include(r => r.usuario)
                 .Include(r => r.Equipo)
                 .FirstOrDefaultAsync(r => r.ReservaId == id);
 
@@ -150,8 +154,6 @@ namespace Reserva_de_equipos.Controllers
 
             if (tipoEquipoId.HasValue)
                 q = q.Where(e => e.TipoEquipoId == tipoEquipoId);
-
-            q = q.Where(e => e.Disponible);
 
             if (equipoSeleccionadoId.HasValue)
             {
@@ -176,17 +178,19 @@ namespace Reserva_de_equipos.Controllers
         public async Task<IActionResult> EquiposTipo(int tipoEquipoId)
         {
             var equipos = await _context.Equipos
-                .Where(e => e.TipoEquipoId == tipoEquipoId && e.Disponible)
+                .Where(e => e.TipoEquipoId == tipoEquipoId)
                 .Select(e => new { equipoId = e.EquipoId, nombre = e.Nombre })
                 .ToListAsync();
             return Json(equipos);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Pendientes()
         {
             var reservasPendientes = await _context.Reservas
                 .Include(r => r.Equipo)
+                    .ThenInclude(r => r.TipoEquipo)
                 .Where(r => r.Estado == "Pendiente")
                 .OrderBy(r => r.Fecha)
                 .ToListAsync();
@@ -198,6 +202,7 @@ namespace Reserva_de_equipos.Controllers
         {
             var reservasEnProceso = await _context.Reservas
                 .Include(r => r.Equipo)
+                    .ThenInclude (r => r.TipoEquipo)
                 .Where(r => r.Estado == "En proceso")
                 .OrderBy(r => r.Fecha)
                 .ToListAsync();
@@ -217,7 +222,6 @@ namespace Reserva_de_equipos.Controllers
             TempData["Mensaje"] = "Reserva en proceso.";
             return RedirectToAction(nameof(Pendientes));
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -296,6 +300,61 @@ namespace Reserva_de_equipos.Controllers
                     return RedirectToAction(nameof(Pendientes));
                 }
             }
-        } 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Buscar()
+        {
+            var tipos = await _context.TipoEquipos
+                .OrderBy(t => t.Nombre)
+                .Select(t => new { t.TipoEquipoId, t.Nombre })
+                .ToListAsync();
+
+            ViewBag.TiposEquipo = new SelectList(tipos, "TipoEquipoId", "Nombre");
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BuscarEquipos(int? tipoId, DateTime? fechaInicio, DateTime? fechaFin)
+        {
+            if (!tipoId.HasValue)
+                return Json(new { error = "Debe seleccionar un tipo de equipo." });
+
+            var query = _context.Equipos
+                .AsNoTracking()
+                .Include(e => e.TipoEquipo)
+                .Include(e => e.Reservas)
+                .Where(e => e.TipoEquipoId == tipoId.Value)
+                .AsQueryable();
+
+            // 🔹 Filtrado por disponibilidad en rango de fechas
+            if (fechaInicio.HasValue && fechaFin.HasValue)
+            {
+                var inicio = fechaInicio.Value;
+                var fin = fechaFin.Value;
+
+                query = query.Where(e =>
+                    (e.FechaInicio == null && e.FechaFin == null)
+                    || (e.FechaInicio <= fin && e.FechaFin >= inicio)
+                );
+            }
+
+            var items = await query
+                .Select(e => new
+                {
+                    equipoId = e.EquipoId,
+                    nombre = e.Nombre,
+                    tipo = e.TipoEquipo.Nombre,
+                    descripcion = e.Descripcion,
+                    imagenUrl = e.ImagenUrl,
+                    fechaInicio = e.FechaInicio,
+                    fechaFin = e.FechaFin,
+                    nroReservas = e.Reservas.Count()
+                })
+                .OrderByDescending(e => e.nroReservas)
+                .ToListAsync();
+
+            return Json(items);
+        }   
     }
 } 

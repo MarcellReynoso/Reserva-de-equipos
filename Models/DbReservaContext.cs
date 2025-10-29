@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Reserva_de_equipos.Models;
 
@@ -113,7 +111,6 @@ public partial class DbReservaContext : DbContext
         {
             entity.ToTable("Equipo", "Reserva");
 
-            entity.Property(e => e.Disponible).HasDefaultValue(true);
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -122,6 +119,21 @@ public partial class DbReservaContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false);
             entity.Property(e => e.TipoEquipoId).HasColumnName("Tipo_EquipoId");
+            entity.Property(e => e.FechaInicio)
+                .HasColumnName("Fecha_Inicio")
+                .HasColumnType("datetime2")
+                .IsRequired(false);
+            entity.Property(e => e.FechaFin)
+                .HasColumnName("Fecha_Fin")
+                .HasColumnType("datetime2")
+                .IsRequired(false);
+            entity.Property(e => e.ImagenUrl)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .IsRequired(false);
+            entity.Property(e => e.ImagenJson)
+                .IsUnicode(false)
+                .IsRequired(false);
 
             entity.HasOne(d => d.Responsable).WithMany(p => p.Equipos)
                 .HasForeignKey(d => d.ResponsableId)
@@ -168,13 +180,6 @@ public partial class DbReservaContext : DbContext
         {
             entity.ToTable("Responsable", "Reserva");
 
-            entity.Property(e => e.ApellidoMaterno)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.ApellidoPaterno)
-                .IsRequired()
-                .HasMaxLength(100)
-                .IsUnicode(false);
             entity.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(100)
@@ -182,6 +187,35 @@ public partial class DbReservaContext : DbContext
             entity.Property(e => e.SegundoNombre)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.ApellidoPaterno)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.ApellidoMaterno)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Correo)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Username)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+
+            entity.HasOne(r => r.Usuario)
+                .WithOne(u => u.Responsable)
+                .HasForeignKey<Responsable>(r => r.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Responsable_Usuario");
+
+            entity.HasOne(r => r.Rol)
+                .WithMany(r => r.Responsables)
+                .HasForeignKey(r => r.RolId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_Responsable_Rol");
+
+            entity.HasIndex(r => r.UsuarioId)
+                .IsUnique()
+                .HasDatabaseName("IX_Responsable_UsuarioId");
         });
 
         modelBuilder.Entity<Rol>(entity =>

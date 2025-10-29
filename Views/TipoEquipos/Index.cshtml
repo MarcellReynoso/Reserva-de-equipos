@@ -25,6 +25,7 @@
     <table id="TiposEquipo" class="table table-hover w-100">
         <thead>
             <tr>
+                <th style="width:48px;">Ícono</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th style="width:160px;"></th>
@@ -34,8 +35,18 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.Nombre</td>
-                    <td>@item.Descripcion</td>
+                    <td class="text-center">
+                        <img 
+                             src="@Url.Content(item.IconoUrl)"
+                             alt="icono" 
+                             style="
+                                width:48px;
+                                height:48px;
+                                object-fit:contain
+                                "/>
+                    </td>
+                    <td>@Html.DisplayFor(modelitem => @item.Nombre)</td>
+                    <td>@Html.DisplayFor(modelitem => @item.Descripcion)</td>
                     <td class="text-nowrap">
                         <div class="d-flex align-items-center justify-content-evenly gap-2">
                             <button type="button"

@@ -5,11 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Reserva_de_equipos.Models;
 using Reserva_de_equipos.Models.ViewModels;
 using Reserva_de_equipos.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Reserva_de_equipos.Controllers
 {
@@ -31,6 +26,7 @@ namespace Reserva_de_equipos.Controllers
 
             //Obtener los roles y áreas de los usuarios
             ViewBag.Roles = await _context.Rols
+                .Where(r => r.Nombre != "Responsable")
                 .Select(r => new SelectListItem { Value = r.RolId.ToString(), Text = r.Nombre})
                 .ToListAsync();
             
@@ -69,35 +65,50 @@ namespace Reserva_de_equipos.Controllers
             return View();
         }
 
+        // POST: Usuarios/Create/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateUsuarioViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
+                var error = ModelState.Values
+                    .SelectMany(e => e.Errors)
+                    .FirstOrDefault()?.ErrorMessage ?? "Complete los campos requeridos. ";
+                TempData["Mensaje"] = error;
 
-                var usuario = new Usuario
-                {
-                    Nombre = model.Nombre,
-                    SegundoNombre = model.SegundoNombre,
-                    ApellidoPaterno = model.ApellidoPaterno,
-                    ApellidoMaterno = model.ApellidoMaterno,
-                    Correo = model.Correo,
-                    Password = Encrypt.GetSHA256(model.Password),
-                    Username = model.Username,
-                    Activo = true,
-                    RolId = model.RolId,
-                    AreaId = model.AreaId
-                };
+                ViewData["AreaId"] = new SelectList(_context.Areas, "AreaId", "Nombre", model.AreaId);
+                ViewData["RolId"] = new SelectList(_context.Rols, "RolId", "Nombre", model.RolId);
 
-                await _context.AddAsync(usuario);
-                await _context.SaveChangesAsync();
-                TempData["Mensaje"] = "Usuario creado exitosamente";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AreaId"] = new SelectList(_context.Areas, "AreaId", "Nombre", model.AreaId);
-            ViewData["RolId"] = new SelectList(_context.Rols, "RolId", "Nombre", model.RolId);
-            return View(model);
+
+            var responsableRolId = await GetResponsableRolId();
+            if (model.RolId == responsableRolId && responsableRolId != 0)
+            {
+                TempData["Mensaje"] = "El rol 'Responsable' no se asigna desde Usuarios. Para ello vaya a la seccion Responsables.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var usuario = new Usuario
+            {
+                Nombre = model.Nombre,
+                SegundoNombre = model.SegundoNombre,
+                ApellidoPaterno = model.ApellidoPaterno,
+                ApellidoMaterno = model.ApellidoMaterno,
+                Correo = model.Correo,
+                Password = Encrypt.GetSHA256(model.Password),
+                Username = model.Username,
+                Activo = true,
+                RolId = model.RolId,
+                AreaId = model.AreaId
+            };
+
+            await _context.AddAsync(usuario);
+            await _context.SaveChangesAsync();
+            TempData["Mensaje"] = "Usuario creado exitosamente";
+            return RedirectToAction(nameof(Index));
+
         }
 
         // GET: Usuarios/Edit/5
@@ -108,6 +119,7 @@ namespace Reserva_de_equipos.Controllers
 
             //Obtener los roles y áreas de los usuarios
             ViewBag.Roles = await _context.Rols
+                .Where(r => r.Nombre != "Responsable")
                 .Select(r => new SelectListItem { Value = r.RolId.ToString(), Text = r.Nombre })
                 .ToListAsync();
             ViewBag.Areas = await _context.Areas
@@ -137,6 +149,7 @@ namespace Reserva_de_equipos.Controllers
             return PartialView("_EditUsuario", usuarioViewModel);
         }
 
+        // POST: Usuarios/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditUsuarioViewModel model)
@@ -169,13 +182,24 @@ namespace Reserva_de_equipos.Controllers
                 return RedirectToAction("Index", "Usuarios");
             }
 
+            var responsableRolId = await GetResponsableRolId();
+            if (model.RolId == responsableRolId && responsableRolId != 0)
+            {
+                TempData["Mensaje"] = "El rol 'Responsable' no se asigna desde Usuarios. Para ello vaya a la seccion Responsables.";
+                return RedirectToAction(nameof(Index));
+            }
+
             usuario.Nombre = model.Nombre;
             usuario.SegundoNombre = model.SegundoNombre;
             usuario.ApellidoPaterno = model.ApellidoPaterno;
             usuario.ApellidoMaterno = model.ApellidoMaterno;
             usuario.Correo = model.Correo;
             usuario.Username = model.Username;
-            usuario.Password = Encrypt.GetSHA256(model.Password);
+            // Solo actualizar la contraseña si el usuario ingresó una nueva
+            if (!string.IsNullOrWhiteSpace(model.Password))
+            {
+                usuario.Password = Encrypt.GetSHA256(model.Password);
+            }
             usuario.Activo = model.Activo;
             usuario.RolId = model.RolId;
             usuario.AreaId = model.AreaId;
@@ -184,6 +208,13 @@ namespace Reserva_de_equipos.Controllers
             TempData["Mensaje"] = "Usuario actualizado correctamente.";
             return RedirectToAction("Index", "Usuarios");
         }
+
+        private async Task<int> GetResponsableRolId() =>
+            await _context.Rols
+                .Where(r => r.Nombre == "Responsable")
+                .Select(r => r.RolId)
+                .FirstOrDefaultAsync();
+
 
     }
 }

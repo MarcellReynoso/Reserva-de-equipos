@@ -7,7 +7,7 @@
                 <h5 class="modal-title" id="crearEquipoModalLabel">Crear equipo</h5>
             </div>
             <div class="modal-body">
-                <form asp-action="Create" method="post" novalidate class="modal-form p-1">
+                <form asp-action="Create" method="post" enctype="multipart/form-data" novalidate class="modal-form p-1">
                     @Html.AntiForgeryToken()
 
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
@@ -26,18 +26,31 @@
                         <span asp-validation-for="TipoEquipoId" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="ResponsableId" class="form-label">Responsable (*)</label>
-                        <select asp-for="ResponsableId" class="form-select" asp-items="ViewBag.Responsables">
-                            <option value="" selected disabled>Seleccione un responsable</option>
-                        </select>
-                        <span asp-validation-for="ResponsableId" class="text-danger"></span>
+                    <div class="row align-items-center g-2 mb-3">
+                        <div class="col-6">
+                            <label asp-for="FechaInicio" class="col-form-label fw-semibold">Fecha de inicio (*)</label>
+                            <input asp-for="FechaInicio" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="FechaInicio" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="FechaFin" class="col-form-label fw-semibold">Fecha fin</label>
+                            <input asp-for="FechaFin" type="datetime-local" class="form-control" id="FechaFin" />
+                            <span asp-validation-for="FechaFin" class="text-danger small"></span>
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="Descripcion" class="form-label">Descripción</label>
                         <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
                         <span asp-validation-for="Descripcion" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Imagen del equipo</label>
+                        <input type="file" name="Imagen" accept="image/*" class="form-control" />
+                        <div class="mt-2">
+                            <img id="preview" class="img-fluid rounded d-none" style="max-height:160px;" />
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 pt-2">

@@ -9,7 +9,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <form asp-action="Edit" method="post" novalidate class="modal-form p-1">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data" novalidate class="modal-form p-1">
                     @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="TipoEquipoId" />
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
@@ -22,11 +22,49 @@
 
                     <div class="mb-3">
                         <label asp-for="Descripcion" class="form-label">Descripción</label>
-                        <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+                        <textarea asp-for="Descripcion" class="form-control" rows="4"></textarea>
                         <span asp-validation-for="Descripcion" class="text-danger"></span>
                     </div>
 
-                    <div class="d-flex align-items-center gap-2">
+                    <!-- Ícono actual o subida -->
+                    @if (!string.IsNullOrWhiteSpace(Model.IconoUrl))
+                    {
+                        <div class="mb-2 fw-semibold">Ícono actual:</div>
+                        <div class="mb-3">
+                            @{
+                                var iconUrl = string.IsNullOrWhiteSpace(Model.IconoUrl)
+                                ? "~/assets/images/icono-placeholder.svg"
+                                : Model.IconoUrl.StartsWith("~/") ? Model.IconoUrl : "~" + Model.IconoUrl; // normaliza a "~/"
+                            }
+
+                            <img src="@Url.Content(iconUrl)"
+                                 onerror="this.onerror=null;this.src='@Url.Content("~/assets/images/icono-placeholder.svg")';"
+                                 alt="Ícono"
+                                 style="
+                                    width:96px;
+                                    height:96px;
+                                    object-fit:contain;
+                                    border:1px solid #eee;
+                                    padding:2px;
+                                    border-radius:6px" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Reemplazar ícono (opcional)</label>
+                            <input type="file" name="icon" accept="image/*" class="form-control" />
+                        </div>
+                        <small class="form-text">El icono debe ser una imagen (png/jpg/svg) y no debe superar 512KB</small>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">Agregar ícono (PNG/JPG/SVG)</label>
+                            <input type="file" name="icon" accept="image/*" class="form-control" />
+                            <div class="form-text">Sugerido: 24×24 o 32×32 px, fondo transparente.</div>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-end align-items-center gap-2 pt-2">
                         <button type="submit" class="btn btn-primary px-4">Guardar</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     </div>

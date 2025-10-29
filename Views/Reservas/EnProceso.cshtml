@@ -17,8 +17,8 @@
         <thead>
             <tr>
                 <th class="dtr-control" style="width:1%"></th>
+                <th>Ícono</th>
                 <th>Fecha</th>
-                <th>Estado</th>
                 <th>Equipo</th>
                 <th>Inicio</th>
                 <th>Fin</th>
@@ -39,23 +39,27 @@
 
                 <tr>
                     <td class="dtr-control"></td>
-                    <td>@Html.DisplayFor(modelItem => item.Fecha)</td>
-                    <td class=" align-content-center">
-                        <div class="rounded-3 p-2 px-3 text-center fw-semibold @bgColor">
-                            @Html.DisplayFor(modelItem => item.Estado)
-                        </div>
+                    <td class="text-center">
+                        <img src="@Url.Content(item.Equipo.TipoEquipo.IconoUrl)"
+                             alt="icono"
+                             style="
+                                width:48px;
+                                height:48px;
+                                object-fit:contain
+                             " />
                     </td>
+                    <td>@Html.DisplayFor(modelItem => item.Fecha)</td>
                     <td class="text-justify">@Html.DisplayFor(modelItem => item.Equipo.Nombre)</td>
                     <td>@Html.DisplayFor(modelItem => item.FechaInicio)</td>
                     <td>@Html.DisplayFor(modelItem => item.FechaFin)</td>
                     <td>
-                        <div class="d-lg-flex justify-content-lg-evenly">
+                        <div class="d-lg-flex justify-content-lg-evenly gap-2">
                             <a asp-action="AsignarConductor"
                                asp-route-id="@item.ReservaId"
                                class="btn btn-success d-inline-flex col-lg-auto col-auto gap-2 align-items-center"
                                data-assign>
                                 <iconify-icon icon="fa6-solid:user-check"></iconify-icon>
-                                <span>Asignar conductor</span>
+                                <span>Asignar</span>
                             </a>
 
                             <a asp-action="Details" asp-route-id="@item.ReservaId" data-edit

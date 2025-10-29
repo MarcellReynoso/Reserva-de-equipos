@@ -13,11 +13,17 @@ public partial class Equipo
 
     public string? Descripcion { get; set; }
 
-    public bool Disponible { get; set; }
-
     public int ResponsableId { get; set; }
 
     public int TipoEquipoId { get; set; }
+
+    public DateTime? FechaInicio { get; set; }
+
+    public DateTime? FechaFin { get; set; }
+
+    public string? ImagenUrl { get; set; }
+
+    public string? ImagenJson { get; set; }
 
     public virtual ICollection<AreaDisponible> AreaDisponibles { get; set; } = new List<AreaDisponible>();
 

@@ -29,6 +29,7 @@
                 <th>Segundo nombre</th>
                 <th>Apellido paterno</th>
                 <th>Apellido materno</th>
+                <th>Nombre de usuario</th>
                 <th style="width:160px;"></th>
             </tr>
         </thead>
@@ -36,12 +37,13 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.Nombre</td>
-                    <td>@item.SegundoNombre</td>
-                    <td>@item.ApellidoPaterno</td>
-                    <td>@item.ApellidoMaterno</td>
+                    <td>@Html.DisplayFor(modelitem => item.Nombre)</td>
+                    <td>@Html.DisplayFor(modelitem => item.SegundoNombre)</td>
+                    <td>@Html.DisplayFor(modelitem => item.ApellidoPaterno)</td>
+                    <td>@Html.DisplayFor(modelitem => item.ApellidoMaterno)</td>
+                    <td>@Html.DisplayFor(modelitem => item.Username)</td>
                     <td class="text-nowrap">
-                        <div class="d-flex justify-content-evenly">
+                        <div class="d-flex justify-content-evenly gap-2">
                             <button type="button"
                                     class="btn btn-warning"
                                     data-bs-toggle="modal"
@@ -66,7 +68,41 @@
     </table>
 </div>
 
-@await Html.PartialAsync("_CreateResponsable", new Reserva_de_equipos.Models.Responsable())
+@* Modal Crear Responsable: ahora solo elige un Usuario existente *@
+<div class="modal fade" id="crearResponsableModal" tabindex="-1" aria-labelledby="crearResponsableModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-2 py-3">
+                <h5 class="modal-title" id="crearResponsableModalLabel">Crear responsable</h5>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" method="post" novalidate class="modal-form p-1">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label">Seleccione un usuario</label>
+                        <select name="usuarioId" class="form-select" required>
+                            <option selected disabled value="">Seleccione ... </option>
+                            @foreach (var u in (IEnumerable<SelectListItem>)ViewBag.UsuariosResponsables)
+                            {
+                                <option value="@u.Value">@u.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="alert alert-info small">
+                        El responsable tomará los datos del usuario seleccionado.
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-2">
+                        <button type="submit" class="btn btn-primary px-4">Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @foreach (var item in Model)
 {

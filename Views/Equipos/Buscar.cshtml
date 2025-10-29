@@ -1,0 +1,115 @@
+﻿@model IEnumerable<Reserva_de_equipos.Models.Equipo>
+@{
+    ViewData["Title"] = "ReQ GoSoft | Buscar equipos";
+}
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<h2 class="fw-lighter mb-lg-3 pb-1 h2">
+    Buscar <strong class="fw-semibold">equipos</strong>
+</h2>
+
+<form method="get" class="mb-3" id="frmFiltro">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label d-flex align-items-center gap-2">
+                <iconify-icon icon="flowbite:truck-solid"></iconify-icon>
+                Tipo de equipo
+            </label>
+            <select name="tipoId" class="form-select">
+                <option value="">Todos</option>
+                @foreach (var t in (SelectList)ViewBag.TiposEquipo)
+                {
+                    <option value="@t.Value" selected="@(t.Selected)">@t.Text</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label d-flex align-items-center gap-2">
+                <iconify-icon icon="mdi:account-badge"></iconify-icon>
+                Responsable
+            </label>
+
+            <select name="responsableId" class="form-select">
+                <option value="">Todos</option>
+                @foreach (var r in (SelectList)ViewBag.Responsables)
+                {
+                    <option value="@r.Value" selected="@(r.Selected)">@r.Text</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary mt-auto">Buscar</button>
+            <a href="@Url.Action("Buscar", "Equipos")" class="btn btn-warning mt-auto">Limpiar</a>
+        </div>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table id="tblEquipos" class="table table-hover w-100 align-middle">
+        <thead>
+            <tr>
+                <th style="width:48px;">Ícono</th>
+                <th>Equipo</th>
+                <th>Tipo</th>
+                <th>Responsable</th>
+                <th>Disponibilidad</th>
+                <th style="width: 140px"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var e in Model)
+            {
+                <tr>
+                    <td class="text-center">
+                        <img src="@Url.Content(e.TipoEquipo?.IconoUrl ?? "/assets/images/placeholder.png")"
+                             alt="icono" style="width:36px;height:36px;object-fit:contain;" />
+                    </td>
+                    <td>@e.Nombre</td>
+                    <td>@e.TipoEquipo?.Nombre</td>
+                    <td>@e.Responsable?.Nombre</td>
+                    <td>
+                        @{
+                            var fi = e.FechaInicio?.ToString("dd MMM yyyy HH:mm");
+                            var ff = e.FechaFin?.ToString("dd MMM yyyy HH:mm");
+                        }
+                        <span class="text-nowrap">
+                            @(fi ?? "—") — @(ff ?? "—")
+                        </span>
+                    </td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-primary d-flex align-items-center gap-2"
+                                data-bs-toggle="modal"
+                                data-bs-target="#readOnlyEquipoModal-@e.EquipoId">
+                            <iconify-icon icon="mdi:eye"></iconify-icon>
+                            <span>Ver detalles</span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@foreach (var item in Model)
+{
+    @await Html.PartialAsync("_ReadOnlyEquipo", item)
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new DataTable('#tblEquipos', {
+                searching: false,
+                pageLength: 8,
+                lengthMenu: [5, 8, 10, 15, 20],
+                responsive: true,
+                language: { url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json' },
+                columnDefs: [{ orderable: false, targets: [0, 5] }]
+            });
+        });
+    </script>
+}

@@ -34,8 +34,8 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.Nombre</td>
-                    <td>@item.Descripción</td>
+                    <td>@Html.DisplayFor(modelitem => item.Nombre)</td>
+                    <td>@Html.DisplayFor(modelitem => item.Descripción)</td>
                     <td class="text-nowrap">
                         <div class="d-flex justify-content-center gap-2">
                             <button type="button"

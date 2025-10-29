@@ -36,9 +36,9 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.Nombre</td>
-                    <td>@item.Descripción</td>
-                    <td>@item.Empresa?.Nombre</td>
+                    <td>@Html.DisplayFor(modelitem => item.Nombre)</td>
+                    <td>@Html.DisplayFor(modelitem => item.Descripción)</td>
+                    <td>@Html.DisplayFor(modelitem => item.Empresa.Nombre)</td>
                     <td class="align-content-center" style="width:150px;">
                         <div class="d-flex justify-content-center gap-2">
                             <button type="button"
