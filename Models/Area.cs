@@ -17,8 +17,6 @@ public partial class Area
     [Required]
     public int? EmpresaId { get; set; }
 
-    public virtual ICollection<AreaDisponible> AreaDisponibles { get; set; } = new List<AreaDisponible>();
-
     public virtual Empresa Empresa { get; set; }
 
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();

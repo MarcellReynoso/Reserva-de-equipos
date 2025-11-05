@@ -13,7 +13,7 @@
 
 <div class="row justify-content-between pb-4">
     <div class="col-auto">
-        <button class="btn btn-primary my-2 d-flex align-items-center gap-2"
+        <button class="rounded-5 p-3 text-center fw-semibold bg-enProceso d-flex align-items-center gap-2 border-0"
                 data-bs-toggle="modal" data-bs-target="#crearConductorModal">
             <iconify-icon icon="zondicons:add-solid"></iconify-icon>
             <span>Crear nuevo conductor</span>
@@ -45,7 +45,7 @@
                     <td class="text-nowrap">
                         <div class="d-flex justify-content-evenly">
                             <button type="button"
-                                    class="btn btn-warning"
+                                    class="rounded-3 p-2 px-3 text-center fw-semibold bg-pendiente d-flex align-items-center gap-2 border-0"
                                     data-bs-toggle="modal"
                                     data-bs-target="#editConductorModal-@item.ConductorId">
                                 <iconify-icon icon="ri:edit-fill"></iconify-icon>
@@ -55,7 +55,7 @@
                             <form asp-controller="Conductores" asp-action="Delete" asp-route-id="@item.ConductorId"
                                   method="post" onclick="return confirm('¿Realmente desea borrar?');">
                                 @Html.AntiForgeryToken()
-                                <button class="btn btn-danger">
+                                <button class="rounded-3 p-2 px-3 text-center fw-semibold bg-rechazado d-flex align-items-center gap-2 border-0">
                                     <iconify-icon icon="material-symbols:delete"></iconify-icon>
                                     <span>Borrar</span>
                                 </button>

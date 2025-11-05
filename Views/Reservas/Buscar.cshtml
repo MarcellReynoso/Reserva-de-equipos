@@ -86,7 +86,7 @@
             <!-- Resultados -->
             <div class="col-lg-8 mt-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="fw-semibold mb-0">Equipos disponibles</h5>
+                    <h5 class="card-header mb-2">Equipos disponibles</h5>
                     <small id="countText" class="text-muted"></small>
                 </div>
                 <div id="cardsHost">
@@ -184,28 +184,39 @@
             }
 
             cardsHost.innerHTML = items.map(it => `
-              <div class="card mb-3 shadow-sm">
+              <div class="card shadow-sm">
                 <div class="row g-0">
-                  <div class="col-md-4">
+                  <div class="col-md-6">
                     <img src="${(it.imagenUrl || '/assets/images/placeholder.png')}"
                          class="img-fluid rounded-start" alt="${it.nombre}">
                   </div>
-                  <div class="col-md-8">
+                  <div class="col-md-6">
                     <div class="card-body">
-                      <h5 class="card-title fw-semibold mb-1">${it.nombre}</h5>
-                      <p class="card-text small mb-2 text-muted">${it.tipo ?? ''}</p>
-                      <p class="card-text small mb-2">
+                      <h5 class="card-title fw-semibold mb-1" style="font-size: 24px;">${it.nombre}</h5>
+                      <p class="card-text small mb-2 text-muted" style="font-size: 18px;">${it.tipo ?? ''}</p>
+                      <p class="card-text small mb-2" style="font-size: 14px;">
                         <strong>Equipo disponible:</strong>
                         ${it.fechaInicio ? formatFecha(it.fechaInicio) : 'Sin fecha'} -
                         ${it.fechaFin ? formatFecha(it.fechaFin) : 'Sin fecha'}
                       </p>
+                      ${it.descripcion ? '<div id="notificacionDetalle" class="row align-items-center g-2 mb-1">' +
+                          '<div class="col-auto">' +
+                              '<div class="alert alert-primary d-flex align-items-center py-2 mb-0" role="alert" ' +
+                                   'style="border-left: 5px solid #00588c;">' +
+                                  '<span style="font-size: 12px;">' +
+                                      '<strong>Detalle: </strong> ' + (it.descripcion || '-') +
+                                  '</span>' +
+                              '</div>' +
+                          '</div>' +
+                      '</div>' : ''}
+                      <div class="d-flex justify-content-between align-items-end">
                       <p class="card-text mb-1"><strong>Cantidad de reservas:</strong> ${it.nroReservas}</p>
-
-                      <button type="button"
-                              class="btn btn-outline-primary btn-sm mt-2 btn-ver-reservas"
-                              data-equipo-id="${it.equipoId}">
-                        Ver reservas &gt;
-                      </button>
+                          <button type="button"
+                                  class="btn btn-md btn-outline-primary mt-2 btn-ver-reservas"
+                                  data-equipo-id="${it.equipoId}">
+                            Ver reservas &gt;
+                          </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -251,6 +262,18 @@
               alert('Por favor selecciona un tipo de equipo.');
               tipoSel.focus();
               return;
+            }
+
+            // Validación de fechas
+            if(fi && ff){
+                const inicio = new Date(fi);
+                const fin = new Date (ff);
+
+                if(fin <= inicio){
+                    alert('La fecha de fin debe ser mayor a la fecha de inicio.');
+                    document.getElementById('fechaFinal').focus();
+                    return;
+                }
             }
 
             const params = new URLSearchParams({

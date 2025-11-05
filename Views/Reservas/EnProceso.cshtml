@@ -56,14 +56,14 @@
                         <div class="d-lg-flex justify-content-lg-evenly gap-2">
                             <a asp-action="AsignarConductor"
                                asp-route-id="@item.ReservaId"
-                               class="btn btn-success d-inline-flex col-lg-auto col-auto gap-2 align-items-center"
+                               class="rounded-3 p-2 px-3 text-center fw-semibold bg-aprobado d-flex align-items-center gap-2 border-0"
                                data-assign>
                                 <iconify-icon icon="fa6-solid:user-check"></iconify-icon>
                                 <span>Asignar</span>
                             </a>
 
                             <a asp-action="Details" asp-route-id="@item.ReservaId" data-edit
-                               class="btn btn-primary d-inline-flex col-lg-auto col-auto">
+                               class="rounded-3 p-2 px-3 text-center fw-semibold bg-enProceso d-flex align-items-center gap-2 border-0">
                                 <span>Ver detalles</span>
                             </a>
 

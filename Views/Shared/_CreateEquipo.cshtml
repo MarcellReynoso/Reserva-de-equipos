@@ -14,13 +14,13 @@
 
                     <div class="mb-3">
                         <label asp-for="Nombre" class="form-label">Nombre (*)</label>
-                        <input asp-for="Nombre" class="form-control" autocomplete="off" autofocus />
+                        <input asp-for="Nombre" class="form-control" autocomplete="off" autofocus required/>
                         <span asp-validation-for="Nombre" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="TipoEquipoId" class="form-label">Tipo de equipo (*)</label>
-                        <select asp-for="TipoEquipoId" class="form-select" asp-items="ViewBag.TiposEquipo">
+                        <select asp-for="TipoEquipoId" class="form-select" asp-items="ViewBag.TiposEquipo" required>
                             <option value="" selected disabled>Seleccione un tipo</option>
                         </select>
                         <span asp-validation-for="TipoEquipoId" class="text-danger"></span>
@@ -29,12 +29,12 @@
                     <div class="row align-items-center g-2 mb-3">
                         <div class="col-6">
                             <label asp-for="FechaInicio" class="col-form-label fw-semibold">Fecha de inicio (*)</label>
-                            <input asp-for="FechaInicio" type="datetime-local" class="form-control" />
+                            <input asp-for="FechaInicio" type="datetime-local" class="form-control" required />
                             <span asp-validation-for="FechaInicio" class="text-danger small"></span>
                         </div>
                         <div class="col-6">
-                            <label asp-for="FechaFin" class="col-form-label fw-semibold">Fecha fin</label>
-                            <input asp-for="FechaFin" type="datetime-local" class="form-control" id="FechaFin" />
+                            <label asp-for="FechaFin" class="col-form-label fw-semibold">Fecha de fin (*)</label>
+                            <input asp-for="FechaFin" type="datetime-local" class="form-control" id="FechaFin" required/>
                             <span asp-validation-for="FechaFin" class="text-danger small"></span>
                         </div>
                     </div>

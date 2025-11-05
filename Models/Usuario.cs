@@ -27,11 +27,13 @@ public partial class Usuario
 
     public int? AreaId { get; set; }
 
+    public int? EquipoId { get; set; }
+
     public virtual Area Area { get; set; }
 
     public virtual Rol Rol { get; set; }
 
-    public virtual Responsable Responsable { get; set; }
+    public virtual ICollection<Equipo> Equipos { get; set; } = new List<Equipo>();
 
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
 }

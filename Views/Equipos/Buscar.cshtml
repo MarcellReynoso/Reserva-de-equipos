@@ -3,8 +3,6 @@
     ViewData["Title"] = "ReQ GoSoft | Buscar equipos";
 }
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-
 <h2 class="fw-lighter mb-lg-3 pb-1 h2">
     Buscar <strong class="fw-semibold">equipos</strong>
 </h2>
@@ -16,7 +14,7 @@
                 <iconify-icon icon="flowbite:truck-solid"></iconify-icon>
                 Tipo de equipo
             </label>
-            <select name="tipoId" class="form-select">
+            <select name="tipoId" id="tipoId" class="form-select" data-live-search="true">
                 <option value="">Todos</option>
                 @foreach (var t in (SelectList)ViewBag.TiposEquipo)
                 {
@@ -41,8 +39,14 @@
         </div>
 
         <div class="col-md-4 d-flex gap-2">
-            <button type="submit" class="btn btn-primary mt-auto">Buscar</button>
-            <a href="@Url.Action("Buscar", "Equipos")" class="btn btn-warning mt-auto">Limpiar</a>
+            <button type="submit" class="rounded-3 p-2 px-3 text-center fw-semibold bg-enProceso d-flex align-items-center gap-2 border-0">
+                <iconify-icon icon="gg:search"></iconify-icon>
+                <span>Buscar</span>
+            </button>
+            <a href="@Url.Action("Buscar", "Equipos")" class="rounded-3 p-2 px-3 text-center fw-semibold bg-pendiente d-flex align-items-center gap-2 border-0">
+                <iconify-icon icon="icon-park-solid:clear-format"></iconify-icon>
+                <span>Limpiar</span>
+            </a>
         </div>
     </div>
 </form>
@@ -54,8 +58,8 @@
                 <th style="width:48px;">Ícono</th>
                 <th>Equipo</th>
                 <th>Tipo</th>
-                <th>Responsable</th>
                 <th>Disponibilidad</th>
+                <th>Responsable</th>
                 <th style="width: 140px"></th>
             </tr>
         </thead>
@@ -69,7 +73,6 @@
                     </td>
                     <td>@e.Nombre</td>
                     <td>@e.TipoEquipo?.Nombre</td>
-                    <td>@e.Responsable?.Nombre</td>
                     <td>
                         @{
                             var fi = e.FechaInicio?.ToString("dd MMM yyyy HH:mm");
@@ -79,13 +82,14 @@
                             @(fi ?? "—") — @(ff ?? "—")
                         </span>
                     </td>
+                    <td>@e.Usuario.Nombre</td>
                     <td>
                         <button type="button"
-                                class="btn btn-primary d-flex align-items-center gap-2"
+                                class="rounded-3 p-2 px-3 text-center fw-semibold bg-enProceso d-flex align-items-center gap-2 border-0"
                                 data-bs-toggle="modal"
                                 data-bs-target="#readOnlyEquipoModal-@e.EquipoId">
                             <iconify-icon icon="mdi:eye"></iconify-icon>
-                            <span>Ver detalles</span>
+                            <span>Detalles</span>
                         </button>
                     </td>
                 </tr>
@@ -108,7 +112,7 @@
                 lengthMenu: [5, 8, 10, 15, 20],
                 responsive: true,
                 language: { url: '//cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json' },
-                columnDefs: [{ orderable: false, targets: [0, 5] }]
+                columnDefs: [{ orderable: false, targets: [0, -1] }]
             });
         });
     </script>

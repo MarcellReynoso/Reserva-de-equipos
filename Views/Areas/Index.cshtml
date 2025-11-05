@@ -15,7 +15,7 @@
 
 <div class="row justify-content-between pb-4">
     <div class="col-auto">
-        <button class="btn btn-primary my-2 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#crearAreaModal">
+        <button class="rounded-3 p-2 px-3 text-center fw-semibold bg-enProceso d-flex align-items-center gap-2 border-0" data-bs-toggle="modal" data-bs-target="#crearAreaModal">
             <iconify-icon icon="zondicons:add-solid"></iconify-icon>
             <span>Crear nueva área</span>
         </button>
@@ -42,7 +42,7 @@
                     <td class="align-content-center" style="width:150px;">
                         <div class="d-flex justify-content-center gap-2">
                             <button type="button"
-                                    class="btn btn-warning text-center"
+                                    class="rounded-3 p-2 px-3 text-center fw-semibold bg-pendiente d-flex align-items-center gap-2 border-0"
                                     data-bs-toggle="modal"
                                     data-bs-target="#editAreaModal-@item.AreaId">
                                 <iconify-icon icon="ri:edit-fill"></iconify-icon>
@@ -51,7 +51,7 @@
 
                             <form asp-controller="Areas" asp-action="Delete" asp-route-id="@item.AreaId"
                                   onclick="return confirm('¿Realmente desea borrar?');" method="post">
-                                <button class="btn btn-danger">
+                                <button class="rounded-3 p-2 px-3 text-center fw-semibold bg-rechazado d-flex align-items-center gap-2 border-0">
                                     <iconify-icon icon="material-symbols:delete"></iconify-icon>
                                     <span>Borrar</span>
                                 </button>

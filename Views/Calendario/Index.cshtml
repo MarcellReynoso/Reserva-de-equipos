@@ -9,11 +9,7 @@
     Reservas del equipo: <strong class="fw-semibold">@equipoNombre</strong>
 </h2>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <a class="btn btn-secondary d-flex align-items-center gap-2" href="@Url.Action("Buscar", "Reservas")">
-        <iconify-icon icon="mynaui:skip-back-solid"></iconify-icon>
-        <span>Regresar</span>
-    </a>
+<div class="d-flex justify-content-end align-items-center mb-3">
     <button class="btn btn-primary d-flex align-items-center gap-2" id="btnCrear">
         <iconify-icon icon="zondicons:add-solid"></iconify-icon>
         <span style="font-size:16px">Crear reserva</span>
@@ -25,9 +21,20 @@
 <div id="calendar"></div>
 
 <section class="container px-0 mt-3">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-        <h5 class="h5 mb-0 text-muted">Leyenda:</h5> 
-        <div class="d-flex flex-wrap align-items-center gap-2" style="font-size:16px">
+    <div class="d-flex justify-content-between align-items-center gap-2">
+        <a class="btn bg-primary-subtle d-flex align-items-center gap-2"
+           href="@Url.Action("Buscar", "Reservas")">
+            <iconify-icon icon="mynaui:skip-back-solid"></iconify-icon>
+            <span>Regresar</span>
+        </a>
+        <div class="d-grid d-lg-none"
+             style="grid-template-columns: repeat(2, auto); gap: .5rem; justify-items: end; font-size:12px;">
+            <span class="fw-medium bg-pendiente px-3 py-1 rounded">Pendiente</span>
+            <span class="fw-medium bg-enProceso px-3 py-1 rounded">En proceso</span>
+            <span class="fw-medium bg-aprobado px-3 py-1 rounded">Aprobado</span>
+            <span class="fw-medium bg-rechazado px-3 py-1 rounded">Rechazado</span>
+        </div>
+        <div class="d-none d-lg-flex flex-wrap align-items-center gap-2" style="font-size:16px;">
             <span class="fw-medium bg-pendiente px-3 py-1 rounded">Pendiente</span>
             <span class="fw-medium bg-enProceso px-3 py-1 rounded">En proceso</span>
             <span class="fw-medium bg-aprobado px-3 py-1 rounded">Aprobado</span>
@@ -35,6 +42,7 @@
         </div>
     </div>
 </section>
+
 
 <!-- Modal Crear Reserva -->
 <div class="modal fade" id="crearReservaModal" tabindex="-1" aria-labelledby="crearReservaLabel" aria-hidden="true">

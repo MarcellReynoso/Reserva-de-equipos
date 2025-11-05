@@ -24,7 +24,7 @@
             <!-- Sidebar scroll-->
             <div>
                 <div class="brand-logo d-flex align-items-center justify-content-between">
-                    <img class="mx-auto py-3" width="200" src="../assets/images/logos/logo-gig.png" alt="" />
+                    <img class="mx-auto py-3" width="200" src="../assets/images/logos/logo-req.png" alt="" />
                     <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                         <i class="ti ti-x fs-8"></i>
                     </div>
@@ -93,6 +93,16 @@
                                     </div>
                                 </a>
                             </li>
+
+                            <li class="sidebar-item">
+                                <a class="sidebar-link justify-content-between"
+                                   asp-controller="Conductores" asp-action="Index">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <iconify-icon icon="mdi:drivers-license"></iconify-icon>
+                                        <span class="hide-menu">Conductores</span>
+                                    </div>
+                                </a>
+                            </li>
                         }
 
                         @if (User.IsInRole("Administrador"))
@@ -116,16 +126,6 @@
                                 <a asp-area="" asp-controller="Usuarios" asp-action="Index" class="sidebar-link" aria-expanded="false">
                                     <iconify-icon icon="mdi:users"></iconify-icon>
                                     <span class="hide-menu">Usuarios</span>
-                                </a>
-                            </li>
-
-                            <li class="sidebar-item">
-                                <a class="sidebar-link justify-content-between"
-                                   asp-controller="Conductores" asp-action="Index">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <iconify-icon icon="mdi:drivers-license"></iconify-icon>
-                                        <span class="hide-menu">Conductores</span>
-                                    </div>
                                 </a>
                             </li>
 
@@ -160,15 +160,6 @@
                                     </li>
                                     <li class="sidebar-item">
                                         <a class="sidebar-link justify-content-between"
-                                           asp-controller="AreaDisponibles" asp-action="Index">
-                                            <div class="d-flex align-items-center gap-3">
-                                                <iconify-icon icon="ic:round-place"></iconify-icon>
-                                                <span class="hide-menu">Área disponible</span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="sidebar-item">
-                                        <a class="sidebar-link justify-content-between"
                                            asp-controller="Empresas" asp-action="Index">
                                             <div class="d-flex align-items-center gap-3">
                                                 <iconify-icon icon="ic:baseline-business"></iconify-icon>
@@ -177,15 +168,6 @@
                                         </a>
                                     </li>
 
-                                    <li class="sidebar-item">
-                                        <a class="sidebar-link justify-content-between"
-                                           asp-controller="Responsables" asp-action="Index">
-                                            <div class="d-flex align-items-center gap-3">
-                                                <iconify-icon icon="ix:work-case-filled"></iconify-icon>
-                                                <span class="hide-menu">Reponsable</span>
-                                            </div>
-                                        </a>
-                                    </li>
                                     <li class="sidebar-item">
                                         <a class="sidebar-link justify-content-between" asp-controller="Roles" asp-action="Index">
                                             <div class="d-flex align-items-center gap-3">

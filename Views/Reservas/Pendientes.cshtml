@@ -59,22 +59,25 @@
                                   class="d-inline col-lg-auto col-2">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@item.ReservaId" />
-                                <button type="submit" class="btn btn-success"
+                                <button type="submit" class="rounded-3 p-2 px-3 text-center fw-semibold bg-aprobado d-flex align-items-center gap-1 border-0"
                                         onclick="return confirm('¿Realmente desea enviar la reserva a En Proceso?');">
+                                    <iconify-icon icon="mynaui:send-solid"></iconify-icon>
                                     <span>Enviar</span>
                                 </button>
                             </form>
 
                             <form asp-action="Rechazar" asp-route-id="@item.ReservaId" method="post" class="d-inline col-lg-auto col-2">
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-danger"
+                                <button type="submit" class="rounded-3 p-2 px-3 text-center fw-semibold bg-rechazado d-flex align-items-center gap-2 border-0"
                                         onclick="return confirm('¿Realmente desea rechazar?');">
+                                    <iconify-icon icon="pajamas:clear"></iconify-icon>
                                     <span>Rechazar</span>
                                 </button>
                             </form>
                             <a asp-action="Details" asp-route-id="@item.ReservaId" data-edit
-                               class="btn btn-primary d-inline-flex col-lg-auto col-auto">
-                                <span>Ver detalles</span>
+                               class="rounded-3 p-2 px-3 text-center fw-semibold bg-enProceso d-flex align-items-center gap-1">
+                                <iconify-icon icon="mdi:eye"></iconify-icon>
+                                <span>Detalles</span>
                             </a>
 
                         </div>

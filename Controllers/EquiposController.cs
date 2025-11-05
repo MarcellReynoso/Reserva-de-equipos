@@ -15,26 +15,20 @@ namespace Reserva_de_equipos.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var responsable = await _context.Responsables
-                .FirstOrDefaultAsync(r => r.UsuarioId == usuarioId);
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(idClaim, out var usuarioId)) return Forbid();
 
             var equipos = await _context.Equipos
-                .Include(e => e.Responsable)
+                .AsNoTracking()
                 .Include(e => e.TipoEquipo)
-                .Where(e => e.ResponsableId == responsable.ResponsableId)
+                .Where(e => e.UsuarioId == usuarioId)
                 .OrderBy(e => e.Nombre)
                 .ToListAsync();
 
-            ViewBag.Responsables = await _context.Responsables
-                .Select(r => new SelectListItem { Value = r.ResponsableId.ToString(), Text = r.Nombre })
-                .OrderBy(r => r.Text)
-                .ToListAsync();
-
-            ViewBag.TiposEquipo = await _context.TipoEquipos
-                .Select(t => new SelectListItem { Value = t.TipoEquipoId.ToString(), Text = t.Nombre })
-                .OrderBy(t => t.Text)
-                .ToListAsync();
+            ViewBag.TiposEquipo = new SelectList(
+                await _context.TipoEquipos.AsNoTracking().OrderBy(t => t.Nombre).ToListAsync(),
+                "TipoEquipoId", "Nombre"
+            );
 
             return View(equipos);
         }
@@ -49,9 +43,16 @@ namespace Reserva_de_equipos.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var responsable = await _context.Responsables
-                .FirstOrDefaultAsync(r => r.ResponsableId == usuarioId);
+            if (!model.FechaInicio.HasValue || !model.FechaFin.HasValue)
+            {
+                TempData["Mensaje"] = "Las fechas de inicio y fin son obligatorias.";
+                return RedirectToAction(nameof(Index));
+            }
+            if (model.FechaInicio > model.FechaFin)
+            {
+                TempData["Mensaje"] = "La fecha de inicio no puede ser mayor que la fecha de fin.";
+                return RedirectToAction(nameof(Index));
+            }
 
             if (model.TipoEquipoId <= 0 || !await _context.TipoEquipos.AnyAsync(t => t.TipoEquipoId == model.TipoEquipoId))
             {
@@ -59,28 +60,25 @@ namespace Reserva_de_equipos.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            if (model.FechaInicio.HasValue && model.FechaFin.HasValue && model.FechaInicio > model.FechaFin)
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(idClaim, out var usuarioId))
             {
-                TempData["Mensaje"] = "La fecha de inicio no puede ser mayor que la fecha de fin.";
+                TempData["Mensaje"] = "No se pudo identificar al usuario.";
                 return RedirectToAction(nameof(Index));
             }
 
             string? imagenUrl = null;
-
             try
             {
                 if (imagen != null && imagen.Length > 0)
                 {
                     var carpetaSubida = "assets/images/products";
                     var uploadsAbs = Path.Combine(env.WebRootPath, carpetaSubida);
-                    if (!Directory.Exists(uploadsAbs))
-                        Directory.CreateDirectory(uploadsAbs);
+                    if (!Directory.Exists(uploadsAbs)) Directory.CreateDirectory(uploadsAbs);
 
                     var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(imagen.FileName)}";
                     var pathAbs = Path.Combine(uploadsAbs, fileName);
-
-                    using (var fs = new FileStream(pathAbs, FileMode.Create))
-                        await imagen.CopyToAsync(fs);
+                    using (var fs = new FileStream(pathAbs, FileMode.Create)) await imagen.CopyToAsync(fs);
 
                     imagenUrl = "/" + Path.Combine(carpetaSubida, fileName).Replace("\\", "/");
                 }
@@ -95,19 +93,35 @@ namespace Reserva_de_equipos.Controllers
             {
                 Nombre = model.Nombre,
                 Descripcion = model.Descripcion,
-                ResponsableId = responsable.ResponsableId,
                 TipoEquipoId = model.TipoEquipoId,
                 FechaInicio = model.FechaInicio,
                 FechaFin = model.FechaFin,
-                ImagenUrl = imagenUrl
+                ImagenUrl = imagenUrl,
+                UsuarioId = usuarioId
             };
 
-            _context.Add(equipo);
+            using var tx = await _context.Database.BeginTransactionAsync();
+
+            _context.Equipos.Add(equipo);
             await _context.SaveChangesAsync();
+
+            var rolNombre = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+            if (string.Equals(rolNombre, "Responsable", StringComparison.OrdinalIgnoreCase))
+            {
+                var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.UsuarioId == usuarioId);
+                if (usuario != null)
+                {
+                    usuario.EquipoId = equipo.EquipoId;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            await tx.CommitAsync();
 
             TempData["Mensaje"] = "Equipo creado exitosamente.";
             return RedirectToAction(nameof(Index));
         }
+
 
 
         [HttpGet]
@@ -121,7 +135,6 @@ namespace Reserva_de_equipos.Controllers
                 return NotFound();
 
             ViewBag.TiposEquipo = new SelectList(await _context.TipoEquipos.ToListAsync(), "TipoEquipoId", "Nombre", equipo.TipoEquipoId);
-            ViewBag.Responsables = new SelectList(await _context.Responsables.ToListAsync(), "ResponsableId", "NombreCompleto", equipo.ResponsableId);
 
             return PartialView("_EditEquipo", equipo);
         }
@@ -143,19 +156,32 @@ namespace Reserva_de_equipos.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var responsable = await _context.Responsables
-                .FirstOrDefaultAsync(r => r.ResponsableId == usuarioId);
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(idClaim, out var usuarioId))
+            {
+                TempData["Mensaje"] = "No se pudo identificar al usuario.";
+                return RedirectToAction(nameof(Index));
+            }
 
-            // Validaciones básicas
+            if (entity.UsuarioId != usuarioId)
+            {
+                TempData["Mensaje"] = "No tiene permisos para editar este equipo.";
+                return RedirectToAction(nameof(Index));
+            }
+
             if (string.IsNullOrWhiteSpace(model.Nombre))
             {
                 TempData["Mensaje"] = "El nombre del equipo es obligatorio.";
                 return RedirectToAction(nameof(Index));
             }
-            if (model.ResponsableId <= 0 || !await _context.Responsables.AnyAsync(r => r.ResponsableId == model.ResponsableId))
+            if (!model.FechaInicio.HasValue || !model.FechaFin.HasValue)
             {
-                TempData["Mensaje"] = "Debe seleccionar un responsable válido.";
+                TempData["Mensaje"] = "Las fechas de inicio y fin son obligatorias.";
+                return RedirectToAction(nameof(Index));
+            }
+            if (model.FechaInicio > model.FechaFin)
+            {
+                TempData["Mensaje"] = "La fecha de inicio no puede ser mayor que la fecha de fin.";
                 return RedirectToAction(nameof(Index));
             }
             if (model.TipoEquipoId <= 0 || !await _context.TipoEquipos.AnyAsync(t => t.TipoEquipoId == model.TipoEquipoId))
@@ -164,30 +190,23 @@ namespace Reserva_de_equipos.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Imagen nueva
             if (imagen != null && imagen.Length > 0)
             {
                 try
                 {
                     var carpetaSubida = "assets/images/products";
                     var uploadsAbs = Path.Combine(env.WebRootPath, carpetaSubida);
-                    if (!Directory.Exists(uploadsAbs))
-                        Directory.CreateDirectory(uploadsAbs);
+                    if (!Directory.Exists(uploadsAbs)) Directory.CreateDirectory(uploadsAbs);
 
                     var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(imagen.FileName)}";
                     var pathAbs = Path.Combine(uploadsAbs, fileName);
+                    using (var fs = new FileStream(pathAbs, FileMode.Create)) await imagen.CopyToAsync(fs);
 
-                    using (var fs = new FileStream(pathAbs, FileMode.Create))
-                        await imagen.CopyToAsync(fs);
-
-                    // Eliminar imagen anterior si existía
                     if (!string.IsNullOrEmpty(entity.ImagenUrl))
                     {
                         var oldPath = Path.Combine(env.WebRootPath, entity.ImagenUrl.TrimStart('/').Replace("/", "\\"));
-                        if (System.IO.File.Exists(oldPath))
-                            System.IO.File.Delete(oldPath);
+                        if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
                     }
-
                     entity.ImagenUrl = "/" + Path.Combine(carpetaSubida, fileName).Replace("\\", "/");
                 }
                 catch (Exception ex)
@@ -197,19 +216,17 @@ namespace Reserva_de_equipos.Controllers
                 }
             }
 
-            // Actualizar demás campos
             entity.Nombre = model.Nombre;
             entity.Descripcion = model.Descripcion;
-            entity.ResponsableId = responsable.ResponsableId;
             entity.TipoEquipoId = model.TipoEquipoId;
             entity.FechaInicio = model.FechaInicio;
             entity.FechaFin = model.FechaFin;
 
             await _context.SaveChangesAsync();
-
             TempData["Mensaje"] = "Equipo actualizado correctamente.";
             return RedirectToAction(nameof(Index));
         }
+
 
 
         [HttpPost, ActionName("Delete")]
@@ -237,7 +254,6 @@ namespace Reserva_de_equipos.Controllers
             var query = _context.Equipos
                 .AsNoTracking()
                 .Include(e => e.TipoEquipo)
-                .Include(e => e.Responsable)
                 .OrderBy(e => e.Nombre)
                 .AsQueryable();
 
@@ -245,7 +261,7 @@ namespace Reserva_de_equipos.Controllers
                 query = query.Where(e => e.TipoEquipoId == tipoId.Value);
 
             if (responsableId.HasValue && responsableId.Value > 0)
-                query = query.Where(e => e.ResponsableId == responsableId.Value);
+                query = query.Where(e => e.UsuarioId == responsableId.Value);
 
             var modelos = await query.ToListAsync();
 
@@ -255,8 +271,17 @@ namespace Reserva_de_equipos.Controllers
             );
 
             ViewBag.Responsables = new SelectList(
-                await _context.Responsables.OrderBy(r => r.Nombre).ToListAsync(),
-                "ResponsableId", "Nombre", responsableId
+                await _context.Usuarios
+                    .Include(u => u.Rol)
+                    .Where(u => u.Activo && u.EquipoId != null && u.Rol.Nombre == "Responsable")
+                    .Select(u => new
+                        {
+                            u.UsuarioId,
+                            Nombre = (u.Nombre + " " + (u.SegundoNombre ?? "") + " " + (u.ApellidoPaterno ?? "") + " " + (u.ApellidoMaterno ?? ""))
+                        })
+                    .OrderBy(r => r.Nombre)
+                    .ToListAsync(),
+                "UsuarioId", "Nombre", responsableId
             );
 
             return View(modelos);

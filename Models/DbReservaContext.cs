@@ -14,28 +14,19 @@ public partial class DbReservaContext : DbContext
     }
 
     public virtual DbSet<Area> Areas { get; set; }
-
-    public virtual DbSet<AreaDisponible> AreaDisponibles { get; set; }
-
     public virtual DbSet<Conductor> Conductores { get; set; }
-
     public virtual DbSet<Empresa> Empresas { get; set; }
-
     public virtual DbSet<Equipo> Equipos { get; set; }
-
     public virtual DbSet<Reserva> Reservas { get; set; }
-
-    public virtual DbSet<Responsable> Responsables { get; set; }
-
     public virtual DbSet<Rol> Rols { get; set; }
-
     public virtual DbSet<TipoEquipo> TipoEquipos { get; set; }
-
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=PC-MARCELL;Database=db_Reserva;Trusted_Connection=True;TrustServerCertificate=True");
+    {
+        if (!optionsBuilder.IsConfigured)
+            optionsBuilder.UseSqlServer("Name=DbReserva");
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,6 +37,7 @@ public partial class DbReservaContext : DbContext
             entity.Property(e => e.Descripción)
                 .HasMaxLength(200)
                 .IsUnicode(false);
+
             entity.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -56,39 +48,26 @@ public partial class DbReservaContext : DbContext
                 .HasConstraintName("FK_Area_Empresa");
         });
 
-        modelBuilder.Entity<AreaDisponible>(entity =>
-        {
-            entity.ToTable("Area_Disponible", "Reserva");
-
-            entity.Property(e => e.AreaDisponibleId).HasColumnName("Area_DisponibleId");
-
-            entity.HasOne(d => d.Area).WithMany(p => p.AreaDisponibles)
-                .HasForeignKey(d => d.AreaId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Area_Disponible_Area");
-
-            entity.HasOne(d => d.Equipo).WithMany(p => p.AreaDisponibles)
-                .HasForeignKey(d => d.EquipoId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Area_Disponible_Equipo");
-        });
-
         modelBuilder.Entity<Conductor>(entity =>
         {
             entity.ToTable("Conductor", "Reserva");
 
             entity.Property(c => c.Disponible).HasDefaultValue(true);
+
             entity.Property(c => c.Nombre)
                 .IsRequired()
                 .HasMaxLength(200)
                 .IsUnicode(false);
+
             entity.Property(c => c.SegundoNombre)
                 .HasMaxLength(200)
                 .IsUnicode(false);
+
             entity.Property(c => c.ApellidoPaterno)
                 .IsRequired()
                 .HasMaxLength(200)
                 .IsUnicode(false);
+
             entity.Property(c => c.ApellidoMaterno)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -101,6 +80,7 @@ public partial class DbReservaContext : DbContext
             entity.Property(e => e.Descripción)
                 .HasMaxLength(200)
                 .IsUnicode(false);
+
             entity.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -114,36 +94,39 @@ public partial class DbReservaContext : DbContext
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(200)
                 .IsUnicode(false);
+
             entity.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(200)
                 .IsUnicode(false);
+
             entity.Property(e => e.TipoEquipoId).HasColumnName("Tipo_EquipoId");
+
             entity.Property(e => e.FechaInicio)
                 .HasColumnName("Fecha_Inicio")
                 .HasColumnType("datetime2")
                 .IsRequired(false);
+
             entity.Property(e => e.FechaFin)
                 .HasColumnName("Fecha_Fin")
                 .HasColumnType("datetime2")
                 .IsRequired(false);
+
             entity.Property(e => e.ImagenUrl)
                 .HasMaxLength(500)
                 .IsUnicode(false)
                 .IsRequired(false);
-            entity.Property(e => e.ImagenJson)
-                .IsUnicode(false)
-                .IsRequired(false);
-
-            entity.HasOne(d => d.Responsable).WithMany(p => p.Equipos)
-                .HasForeignKey(d => d.ResponsableId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Equipo_Responsable");
 
             entity.HasOne(d => d.TipoEquipo).WithMany(p => p.Equipos)
                 .HasForeignKey(d => d.TipoEquipoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Equipo_Tipo_Equipo");
+
+            entity.HasOne(e => e.Usuario)
+                .WithMany(u => u.Equipos)
+                .HasForeignKey(e => e.UsuarioId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_Equipo_Usuario");
         });
 
         modelBuilder.Entity<Reserva>(entity =>
@@ -151,21 +134,27 @@ public partial class DbReservaContext : DbContext
             entity.ToTable("Reserva", "Reserva");
 
             entity.Property(e => e.Indefinido).HasColumnName("Indefinido");
+
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(200)
                 .IsUnicode(false);
+
             entity.Property(e => e.Estado)
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasDefaultValue("Pendiente");
+
             entity.Property(e => e.Fecha).HasDefaultValueSql("(getdate())");
+
             entity.Property(e => e.FechaFin)
                 .HasColumnType("datetime")
                 .HasColumnName("Fecha_Fin");
+
             entity.Property(e => e.FechaInicio)
                 .HasColumnType("datetime")
                 .HasColumnName("Fecha_Inicio");
+
             entity.Property(e => e.Ubicación)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -176,48 +165,6 @@ public partial class DbReservaContext : DbContext
                 .HasConstraintName("FK_Reserva_Equipo");
         });
 
-        modelBuilder.Entity<Responsable>(entity =>
-        {
-            entity.ToTable("Responsable", "Reserva");
-
-            entity.Property(e => e.Nombre)
-                .IsRequired()
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.SegundoNombre)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.ApellidoPaterno)
-                .IsRequired()
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.ApellidoMaterno)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Correo)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Username)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-
-            entity.HasOne(r => r.Usuario)
-                .WithOne(u => u.Responsable)
-                .HasForeignKey<Responsable>(r => r.UsuarioId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_Responsable_Usuario");
-
-            entity.HasOne(r => r.Rol)
-                .WithMany(r => r.Responsables)
-                .HasForeignKey(r => r.RolId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_Responsable_Rol");
-
-            entity.HasIndex(r => r.UsuarioId)
-                .IsUnique()
-                .HasDatabaseName("IX_Responsable_UsuarioId");
-        });
-
         modelBuilder.Entity<Rol>(entity =>
         {
             entity.ToTable("Rol", "Reserva");
@@ -225,6 +172,7 @@ public partial class DbReservaContext : DbContext
             entity.Property(e => e.Descripción)
                 .HasMaxLength(200)
                 .IsUnicode(false);
+
             entity.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -236,9 +184,11 @@ public partial class DbReservaContext : DbContext
             entity.ToTable("Tipo_Equipo", "Reserva");
 
             entity.Property(e => e.TipoEquipoId).HasColumnName("Tipo_EquipoId");
+
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(200)
                 .IsUnicode(false);
+
             entity.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(200)
@@ -250,28 +200,35 @@ public partial class DbReservaContext : DbContext
             entity.ToTable("Usuario", "Reserva");
 
             entity.Property(e => e.Activo).HasDefaultValue(true);
+
             entity.Property(e => e.ApellidoMaterno)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
             entity.Property(e => e.ApellidoPaterno)
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
             entity.Property(e => e.Correo)
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
             entity.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
             entity.Property(e => e.Password)
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
             entity.Property(e => e.SegundoNombre)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
             entity.Property(e => e.Username)
                 .IsRequired()
                 .HasMaxLength(200)

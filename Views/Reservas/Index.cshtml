@@ -21,7 +21,7 @@
             <th>Fecha</th>
             <th>Estado</th>
             <th style="width: 150px">Equipo</th>
-            <th>Detalle</th>
+@*             <th>Detalle</th> *@
             <th>Inicio</th>
             <th>Fin</th>
             <th>Indefinido</th>
@@ -60,15 +60,16 @@
                     </div>
                 </td>
                 <td class="text-justify" style="width: 150px">@Html.DisplayFor(modelItem => item.Equipo.Nombre)</td>
-                <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
+@*                 <td>@Html.DisplayFor(modelItem => item.Descripcion)</td> *@
                 <td>@Html.DisplayFor(modelItem => item.FechaInicio)</td>
                 <td>@Html.DisplayFor(modelItem => item.FechaFin)</td>
                 <td>@Html.DisplayFor(modelItem => item.Indefinido)</td>
-                <td style="width: 150px">
+                <td>
                     <div class="justify-content-start">
                         <a asp-action="Details" asp-route-id="@item.ReservaId" data-edit
-                           class="btn btn-primary d-inline-flex col-lg-auto col-auto">
-                            <span>Ver detalles</span>
+                               class="rounded-3 p-2 px-3 text-center fw-semibold bg-enProceso d-flex align-items-center gap-2">
+                           <iconify-icon icon="mdi:eye"></iconify-icon>
+                           <span>Detalles</span>
                         </a>
                     </div>
                 </td>

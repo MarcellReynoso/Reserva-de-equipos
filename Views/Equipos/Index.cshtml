@@ -13,7 +13,7 @@
 
 <div class="row justify-content-between pb-4">
     <div class="col-auto">
-        <button class="btn btn-primary my-2 d-flex align-items-center gap-2"
+        <button class="rounded-3 p-2 px-3 text-center fw-semibold bg-enProceso d-flex align-items-center gap-2 border-0"
                 data-bs-toggle="modal" data-bs-target="#crearEquipoModal">
             <iconify-icon icon="zondicons:add-solid"></iconify-icon>
             <span>Crear nuevo equipo</span>
@@ -27,9 +27,8 @@
             <tr>
                 <th style="width:48px;">Ícono</th>
                 <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Responsable</th>
                 <th>Tipo de equipo</th>
+                <th>Disponibilidad</th>
                 <th style="width:160px;"></th>
             </tr>
         </thead>
@@ -47,22 +46,36 @@
                                     " />
                     </td>
                     <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Responsable.Nombre)</td>
                     <td>@Html.DisplayFor(modelItem => item.TipoEquipo.Nombre)</td>
+                    <td>
+                        @{
+                            var fi = item.FechaInicio?.ToString("dd MMM yyyy HH:mm");
+                            var ff = item.FechaFin?.ToString("dd MMM yyyy HH:mm");
+                        }
+                        <span class="text-nowrap">
+                            @(fi ?? "—") — @(ff ?? "—")
+                        </span>
+                    </td>
                     <td class="text-nowrap">
                         <div class="d-flex justify-content-evenly gap-2">
                             <button type="button"
-                                    class="btn btn-warning"
+                                    class="rounded-3 p-2 px-3 text-center fw-semibold bg-pendiente d-flex align-items-center gap-2 border-0"
                                     data-bs-toggle="modal"
                                     data-bs-target="#editEquipoModal-@item.EquipoId">
                                 <iconify-icon icon="ri:edit-fill"></iconify-icon>
                                 <span>Editar</span>
                             </button>
+                            <button type="button"
+                                    class="rounded-3 p-2 px-3 text-center fw-semibold bg-enProceso d-flex align-items-center gap-2 border-0"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#readOnlyEquipoModal-@item.EquipoId">
+                                <iconify-icon icon="mdi:eye"></iconify-icon>
+                                <span>Ver detalles</span>
+                            </button>
                             <form asp-controller="Equipos" asp-action="Delete" asp-route-id="@item.EquipoId"
                                   method="post" onclick="return confirm('¿Realmente desea borrar?');">
                                 @Html.AntiForgeryToken()
-                                <button class="btn btn-danger">
+                                <button class="rounded-3 p-2 px-3 text-center fw-semibold bg-rechazado d-flex align-items-center gap-2 border-0">
                                     <iconify-icon icon="material-symbols:delete"></iconify-icon>
                                     <span>Borrar</span>
                                 </button>
@@ -80,6 +93,11 @@
 @foreach (var item in Model)
 {
     @await Html.PartialAsync("_EditEquipo", item)
+}
+
+@foreach (var item in Model)
+{
+    @await Html.PartialAsync("_ReadOnlyEquipo", item)
 }
 
 @section Scripts {
@@ -112,4 +130,5 @@
           }
         });
     </script>
+
 }

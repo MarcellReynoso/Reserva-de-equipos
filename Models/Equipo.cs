@@ -13,7 +13,7 @@ public partial class Equipo
 
     public string? Descripcion { get; set; }
 
-    public int ResponsableId { get; set; }
+    public int UsuarioId { get; set; }
 
     public int TipoEquipoId { get; set; }
 
@@ -25,11 +25,9 @@ public partial class Equipo
 
     public string? ImagenJson { get; set; }
 
-    public virtual ICollection<AreaDisponible> AreaDisponibles { get; set; } = new List<AreaDisponible>();
-
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
 
-    public virtual Responsable Responsable { get; set; }
+    public virtual Usuario Usuario { get; set; }
 
     public virtual TipoEquipo TipoEquipo { get; set; }
 }
